@@ -1,0 +1,4 @@
+[submodule "Assets/Plugins"]
+	path = Assets/Plugins
+	url = https://github.com/matdudq/UnityUtilities
+	branch = master

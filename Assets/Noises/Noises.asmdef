@@ -1,3 +1,16 @@
 {
-	"name": "Noises"
+    "name": "Noises",
+    "rootNamespace": "",
+    "references": [
+        "GUID:e4a06af9a3a34d24ab9ff533e3d98925"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
