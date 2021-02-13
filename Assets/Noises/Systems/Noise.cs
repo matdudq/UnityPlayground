@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Playground.Noises
 {
@@ -132,6 +131,51 @@ namespace Playground.Noises
 			return sum / range;
 		}
 
+		public static void GenerateTextureNoise(ref Texture2D texture2D, NoiseSettings settings)
+		{
+			if (texture2D.width != settings.resolution)
+			{
+				texture2D.Resize( settings.resolution, settings.resolution);
+			}
+
+			if (texture2D.filterMode != settings.filterMode)
+			{
+				texture2D.filterMode = settings.filterMode;
+			}
+			// Vector3 point00 = transform.TransformPoint(new Vector3(-0.5f,-0.5f));
+			// Vector3 point10 = transform.TransformPoint(new Vector3(0.5f,-0.5f));
+			// Vector3 point01 = transform.TransformPoint(new Vector3(-0.5f,0.5f));
+			// Vector3 point11 = transform.TransformPoint(new Vector3(0.5f,0.5f));
+			
+			Vector3 point00 = new Vector3(-0.5f,-0.5f);
+			Vector3 point10 = new Vector3(0.5f, -0.5f);
+			Vector3 point01 = new Vector3(-0.5f,0.5f);
+			Vector3 point11 = new Vector3(0.5f,0.5f);
+			
+			float stepSize = 1.0f /  settings.resolution;
+
+			NoiseMethod noise = Noise.methods[(int) settings.noiseType][ settings.dimensions - 1];
+			
+			for (int y = 0; y <  settings.resolution; y++)
+			{
+				Vector3 point0 = Vector3.Lerp(point00,point01, (y + 0.5f) * stepSize);
+				Vector3 point1 = Vector3.Lerp(point10,point11, (y + 0.5f) * stepSize);
+				
+				for (int x = 0; x <  settings.resolution; x++)
+				{
+					Vector3 point = Vector3.Lerp(point0,point1, (x + 0.5f) * stepSize);
+					float sample = Noise.Sum(noise, point,  settings.frequency,  settings.octaves,  settings.lacunarity,  settings.persistence);
+					if ( settings.noiseType == NoiseType.Perlin) {
+						sample = sample * 0.5f + 0.5f;
+					}
+					
+					texture2D.SetPixel(x,y, settings.colorGradient.Evaluate(sample));
+				}
+			}
+			
+			texture2D.Apply();
+		}
+		
 		#endregion Public methods
 		
 		#region Private methods
