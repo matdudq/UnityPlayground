@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Playground.Noises
+namespace Noises
 {
 	public delegate float NoiseMethod(Vector3 point, float frequency);
 
@@ -164,7 +164,7 @@ namespace Playground.Noises
 				for (int x = 0; x <  settings.resolution; x++)
 				{
 					Vector3 point = Vector3.Lerp(point0,point1, (x + 0.5f) * stepSize);
-					float sample = Noise.Sum(noise, point,  settings.frequency,  settings.octaves,  settings.lacunarity,  settings.persistence);
+					float sample = Sum(noise, point,  settings.frequency,  settings.octaves,  settings.lacunarity,  settings.persistence);
 					if ( settings.noiseType == NoiseType.Perlin) {
 						sample = sample * 0.5f + 0.5f;
 					}
@@ -190,25 +190,20 @@ namespace Playground.Noises
 		
 		private static float Noise2D (Vector3 point, float frequency) {
 			point *= frequency;
-			int ix = Mathf.FloorToInt(point.x);
-			int iy = Mathf.FloorToInt(point.y);
-			ix &= hashMask;
-			iy &= hashMask;
+			int ix = Mathf.FloorToInt(point.x) & hashMask;
+			int iy = Mathf.FloorToInt(point.y) & hashMask;
 			return hash[hash[ix] + iy] * (1f / hashMask);
 		}
 
 		private static float Noise3D (Vector3 point, float frequency) {
 			point *= frequency;
-			int ix = Mathf.FloorToInt(point.x);
-			int iy = Mathf.FloorToInt(point.y);
-			int iz = Mathf.FloorToInt(point.z);
-			ix &= hashMask;
-			iy &= hashMask;
-			iz &= hashMask;
+			int ix = Mathf.FloorToInt(point.x) & hashMask;
+			int iy = Mathf.FloorToInt(point.y) & hashMask;
+			int iz = Mathf.FloorToInt(point.z) & hashMask;
 			return hash[hash[hash[ix] + iy] + iz] * (1f / hashMask);
 		}
 
-		#endregion
+		#endregion Basic noise
 
 		#region Value noise
 

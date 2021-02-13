@@ -1,4 +1,4 @@
-﻿namespace Playground.Noises
+﻿namespace Noises
 {
 	public enum NoiseType
 	{

@@ -1,11 +1,13 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace Playground.Noises
+namespace Noises
 {
 	[CustomEditor(typeof(NoiseSettings))]
 	public class NoiseSettingsCustomEditor : Editor
 	{
+		#region Unity methods
+
 		public override void OnInspectorGUI()
 		{
 			if (GUILayout.Button("Open Generator"))
@@ -13,5 +15,7 @@ namespace Playground.Noises
 				NoiseGeneratorWindow.Open(target as NoiseSettings);
 			}
 		}
+
+		#endregion Unity methods
 	}
 }

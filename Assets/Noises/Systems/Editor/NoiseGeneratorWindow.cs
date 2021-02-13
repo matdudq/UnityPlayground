@@ -3,12 +3,27 @@ using UnityEditor;
 using UnityEngine;
 using Utilities;
 
-namespace Playground.Noises
+namespace Noises
 {
 	public class NoiseGeneratorWindow : ExtendedEditorWindow
 	{
-		private NoiseSettings settings = null;
-		private Texture2D currentNoiseTexture = null;
+		#region Variables
+
+		private NoiseSettings settings            = null;
+		private Texture2D     currentNoiseTexture = null;
+
+		#endregion Variables
+
+		#region Unity methods
+
+		private void OnGUI()
+		{
+			DrawEditorWindow();
+		}
+
+		#endregion Unity methods
+		
+		#region Public methods
 
 		public static void Open(NoiseSettings noiseSettings)
 		{
@@ -23,7 +38,11 @@ namespace Playground.Noises
 			window.CreateNewTexture();
 			window.Show();
 		}
-		
+
+		#endregion Public methods
+
+		#region Private methods
+
 		private void CreateNewTexture()
 		{
 			//Editor case
@@ -40,11 +59,6 @@ namespace Playground.Noises
 			Noise.GenerateTextureNoise(ref currentNoiseTexture,settings);
 		}
 		
-		private void OnGUI()
-		{
-			DrawEditorWindow();
-		}
-
 		private void DrawEditorWindow()
 		{
 			EditorGUI.BeginChangeCheck();
@@ -73,7 +87,7 @@ namespace Playground.Noises
 			{
 				if ( settings.exportFolder.IsAssigned)
 				{
-					string path =  settings.exportFolder.Path + $"/ {settings.noiseType}{settings.dimensions}D Noise {settings.resolution}.png";
+					string path =  settings.exportFolder.Path + $"/{settings.noiseType}{settings.dimensions}D_Noise_{settings.resolution}.png";
 					File.WriteAllBytes(path, currentNoiseTexture.EncodeToPNG());
 					AssetDatabase.Refresh();
 				}
@@ -85,5 +99,7 @@ namespace Playground.Noises
 			
 			EditorGUILayout.EndVertical();
 		}
+
+		#endregion Private methods
 	}
 }
