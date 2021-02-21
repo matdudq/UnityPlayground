@@ -115,22 +115,24 @@ namespace Noises
 		#endregion Variables
 
 		#region Public methods
-
-		public static float Sum (NoiseMethod method, Vector3 point, float frequency, int octaves, float lacunarity, float persistence)
+		
+		public static float Sum (NoiseMethod method, Vector3 point, float frequency, int octaves, float lacunarity, float persistence, bool turbulence)
 		{
 			float sum = method(point, frequency);
 			float amplitude = 1f;
 			float range = 1f;
+
 			for (int i = 1; i < octaves; i++)
 			{
 				frequency *= lacunarity;
 				amplitude *= persistence;
 				range += amplitude;
-				sum += method(point, frequency) * amplitude;
+				float currentSample = turbulence ? Mathf.Abs(method(point, frequency)) : method(point, frequency);
+				sum += currentSample * amplitude;
 			}
 			return sum / range;
 		}
-
+		
 		public static void GenerateTextureNoise(ref Texture2D texture2D, NoiseSettings settings)
 		{
 			if (texture2D.width != settings.resolution)
@@ -142,16 +144,14 @@ namespace Noises
 			{
 				texture2D.filterMode = settings.filterMode;
 			}
-			// Vector3 point00 = transform.TransformPoint(new Vector3(-0.5f,-0.5f));
-			// Vector3 point10 = transform.TransformPoint(new Vector3(0.5f,-0.5f));
-			// Vector3 point01 = transform.TransformPoint(new Vector3(-0.5f,0.5f));
-			// Vector3 point11 = transform.TransformPoint(new Vector3(0.5f,0.5f));
+
+			Matrix4x4 noiseTRS = Matrix4x4.TRS(settings.positionOffset, Quaternion.Euler(settings.rotationOffset), Vector3.one);
 			
-			Vector3 point00 = new Vector3(-0.5f,-0.5f);
-			Vector3 point10 = new Vector3(0.5f, -0.5f);
-			Vector3 point01 = new Vector3(-0.5f,0.5f);
-			Vector3 point11 = new Vector3(0.5f,0.5f);
-			
+			Vector3 point00 = noiseTRS.MultiplyPoint3x4(new Vector3(-0.5f,-0.5f));
+			Vector3 point10 = noiseTRS.MultiplyPoint3x4(new Vector3(0.5f,-0.5f));
+			Vector3 point01 = noiseTRS.MultiplyPoint3x4(new Vector3(-0.5f,0.5f));
+			Vector3 point11 = noiseTRS.MultiplyPoint3x4(new Vector3(0.5f,0.5f));
+
 			float stepSize = 1.0f /  settings.resolution;
 
 			NoiseMethod noise = Noise.methods[(int) settings.noiseType][ settings.dimensions - 1];
@@ -164,11 +164,9 @@ namespace Noises
 				for (int x = 0; x <  settings.resolution; x++)
 				{
 					Vector3 point = Vector3.Lerp(point0,point1, (x + 0.5f) * stepSize);
-					float sample = Sum(noise, point,  settings.frequency,  settings.octaves,  settings.lacunarity,  settings.persistence);
-					if ( settings.noiseType == NoiseType.Perlin) {
-						sample = sample * 0.5f + 0.5f;
-					}
-					
+					float sample = Sum(noise, point,  settings.frequency,  settings.octaves,  settings.lacunarity,  settings.persistence, settings.turbulence);
+					NormalizeSample(ref sample, settings);
+					ApplyWoodEffect(ref sample, settings);
 					texture2D.SetPixel(x,y, settings.colorGradient.Evaluate(sample));
 				}
 			}
@@ -180,6 +178,22 @@ namespace Noises
 		
 		#region Private methods
 
+		private static void NormalizeSample(ref float sample, NoiseSettings settings)
+		{
+			if ( settings.noiseType == NoiseType.Perlin) {
+				sample = sample * 0.5f + 0.5f;
+			}
+		}
+		
+		private static void ApplyWoodEffect(ref float sample, NoiseSettings settings)
+		{
+			if (settings.woodPatternMultiplier > 1.0f)
+			{
+				sample *= settings.woodPatternMultiplier;
+				sample -= (int) sample;
+			}
+		}
+		
 		#region Basic noise
 
 		private static float Noise1D (Vector3 point, float frequency)

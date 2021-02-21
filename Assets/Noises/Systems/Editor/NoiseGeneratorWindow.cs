@@ -77,8 +77,8 @@ namespace Noises
 			
 			EditorGUILayout.BeginVertical();
 			
-			EditorGUI.PrefixLabel(new Rect(30, 275, 100, 15), 0, new GUIContent("Preview:"));
-			EditorGUI.DrawPreviewTexture(new Rect(30, 290, 340, 340), currentNoiseTexture);
+			EditorGUI.PrefixLabel(new Rect(30, 385, 100, 15), 0, new GUIContent("Preview:"));
+			EditorGUI.DrawPreviewTexture(new Rect(30, 400, 340, 340), currentNoiseTexture);
 			EditorGUILayout.EndVertical();
 			
 			EditorGUILayout.BeginVertical();
