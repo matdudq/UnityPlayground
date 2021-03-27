@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using Utilities;
+using Utilities.Editor;
 
 namespace Noises
 {

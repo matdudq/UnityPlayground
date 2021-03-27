@@ -14,12 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   exportFolder:
     guid: 41d2b40c7705645468ace612e82c6b71
-  resolution: 16
-  dimensions: 2
-  octaves: 1
-  lacunarity: 1
-  persistence: 0.5
-  frequency: 100
+  resolution: 256
+  frequency: 15
+  positionOffset: {x: 0, y: 0, z: 0}
+  rotationOffset: {x: 0, y: 0, z: 0}
+  dimensions: 3
+  octaves: 3
+  lacunarity: 2.56
+  persistence: 0
+  woodPatternMultiplier: 1
+  turbulence: 0
   noiseType: 2
   colorGradient:
     serializedVersion: 2
@@ -33,7 +37,7 @@ MonoBehaviour:
     key7: {r: 0, g: 0, b: 0, a: 0}
     ctime0: 0
     ctime1: 65535
-    ctime2: 0
+    ctime2: 65535
     ctime3: 0
     ctime4: 0
     ctime5: 0
@@ -50,3 +54,4 @@ MonoBehaviour:
     m_Mode: 0
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
+  filterMode: 2
