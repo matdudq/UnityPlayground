@@ -1,4 +1,4 @@
-﻿namespace Noises
+﻿namespace DudeiNoise
 {
 	public enum NoiseType
 	{

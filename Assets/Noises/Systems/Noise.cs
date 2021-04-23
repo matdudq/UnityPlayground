@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Noises
+namespace DudeiNoise
 {
 	public delegate float NoiseMethod(Vector3 point, float frequency);
 
@@ -116,7 +116,12 @@ namespace Noises
 
 		#region Public methods
 		
-		public static float Sum (NoiseMethod method, Vector3 point, float frequency, int octaves, float lacunarity, float persistence, bool turbulence)
+		public static float GetProbe(Vector3 point, NoiseSettings generatorSettings)
+		{
+			return GetProbe(point, generatorSettings.NoiseMethod(), generatorSettings.frequency, generatorSettings.octaves, generatorSettings.lacunarity, generatorSettings.persistence, generatorSettings.turbulence, generatorSettings.noiseType,generatorSettings.woodPatternMultiplier);
+		}
+		
+		public static float GetProbe (Vector3 point, NoiseMethod method, float frequency, int octaves, float lacunarity, float persistence, bool turbulence, NoiseType noiseType, float woodPatternMultiplier)
 		{
 			float sum = method(point, frequency);
 			float amplitude = 1f;
@@ -130,44 +135,45 @@ namespace Noises
 				float currentSample = turbulence ? Mathf.Abs(method(point, frequency)) : method(point, frequency);
 				sum += currentSample * amplitude;
 			}
-			return sum / range;
+
+			float sample = sum / range;
+			float normalizedSample = NormalizeSample(sample, noiseType);
+			float sampleWithWoodEffect = ApplyWoodEffect(normalizedSample, woodPatternMultiplier);
+
+			return sampleWithWoodEffect;
 		}
 		
-		public static void GenerateTextureNoise(ref Texture2D texture2D, NoiseSettings settings)
+		public static void GenerateTextureNoise(ref Texture2D texture2D, NoiseTextureSettings textureSettings)
 		{
-			if (texture2D.width != settings.resolution)
+			if (texture2D.width != textureSettings.resolution)
 			{
-				texture2D.Resize( settings.resolution, settings.resolution);
+				texture2D.Resize( textureSettings.resolution, textureSettings.resolution);
 			}
 
-			if (texture2D.filterMode != settings.filterMode)
+			if (texture2D.filterMode != textureSettings.filterMode)
 			{
-				texture2D.filterMode = settings.filterMode;
+				texture2D.filterMode = textureSettings.filterMode;
 			}
 
-			Matrix4x4 noiseTRS = Matrix4x4.TRS(settings.positionOffset, Quaternion.Euler(settings.rotationOffset), Vector3.one);
+			Matrix4x4 noiseTRS = Matrix4x4.TRS(textureSettings.positionOffset, Quaternion.Euler(textureSettings.rotationOffset), Vector3.one);
 			
 			Vector3 point00 = noiseTRS.MultiplyPoint3x4(new Vector3(-0.5f,-0.5f));
 			Vector3 point10 = noiseTRS.MultiplyPoint3x4(new Vector3(0.5f,-0.5f));
 			Vector3 point01 = noiseTRS.MultiplyPoint3x4(new Vector3(-0.5f,0.5f));
 			Vector3 point11 = noiseTRS.MultiplyPoint3x4(new Vector3(0.5f,0.5f));
 
-			float stepSize = 1.0f /  settings.resolution;
-
-			NoiseMethod noise = Noise.methods[(int) settings.noiseType][ settings.dimensions - 1];
+			float stepSize = 1.0f /  textureSettings.resolution;
 			
-			for (int y = 0; y <  settings.resolution; y++)
+			for (int y = 0; y <  textureSettings.resolution; y++)
 			{
 				Vector3 point0 = Vector3.Lerp(point00,point01, (y + 0.5f) * stepSize);
 				Vector3 point1 = Vector3.Lerp(point10,point11, (y + 0.5f) * stepSize);
 				
-				for (int x = 0; x <  settings.resolution; x++)
+				for (int x = 0; x <  textureSettings.resolution; x++)
 				{
 					Vector3 point = Vector3.Lerp(point0,point1, (x + 0.5f) * stepSize);
-					float sample = Sum(noise, point,  settings.frequency,  settings.octaves,  settings.lacunarity,  settings.persistence, settings.turbulence);
-					NormalizeSample(ref sample, settings);
-					ApplyWoodEffect(ref sample, settings);
-					texture2D.SetPixel(x,y, settings.colorGradient.Evaluate(sample));
+					float sample = GetProbe(point,textureSettings.noiseSettings);
+					texture2D.SetPixel(x,y, textureSettings.colorGradient.Evaluate(sample));
 				}
 			}
 			
@@ -178,20 +184,25 @@ namespace Noises
 		
 		#region Private methods
 
-		private static void NormalizeSample(ref float sample, NoiseSettings settings)
+		private static float NormalizeSample(float sample, NoiseType noiseType)
 		{
-			if ( settings.noiseType == NoiseType.Perlin) {
-				sample = sample * 0.5f + 0.5f;
-			}
-		}
-		
-		private static void ApplyWoodEffect(ref float sample, NoiseSettings settings)
-		{
-			if (settings.woodPatternMultiplier > 1.0f)
+			if (noiseType == NoiseType.Perlin) 
 			{
-				sample *= settings.woodPatternMultiplier;
+				return sample * 0.5f + 0.5f;
+			}
+
+			return sample;
+		}
+
+		private static float ApplyWoodEffect(float sample, float woodPatternMultiplier)
+		{
+			if (woodPatternMultiplier > 1.0f)
+			{
+				sample *= woodPatternMultiplier;
 				sample -= (int) sample;
 			}
+
+			return sample;
 		}
 		
 		#region Basic noise
