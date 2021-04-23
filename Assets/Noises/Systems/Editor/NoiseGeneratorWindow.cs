@@ -12,7 +12,7 @@ namespace DudeiNoise
 	{
 		#region Variables
 
-		private Editor textureSettingsEditor = null;
+		private NoiseTextureSettingsEditor textureSettingsEditor = null;
 		private NoiseTextureSettings textureSettings            = null;
 		private Texture2D     currentNoiseTexture = null;
 
@@ -30,12 +30,11 @@ namespace DudeiNoise
 		#region Public methods
 
 		public static void Open(NoiseTextureSettings noiseTextureSettings)
-		{
-			Vector2 windowSize = new Vector2(400, 800);
-			
+		{ 
+			Vector2 windowSize = new Vector2(500, 800);
 			NoiseGeneratorWindow window = GetWindow<NoiseGeneratorWindow>("Noise Texture Generator");
 			window.textureSettings = noiseTextureSettings;
-			window.textureSettingsEditor = Editor.CreateEditor(noiseTextureSettings);
+			window.textureSettingsEditor = (NoiseTextureSettingsEditor)Editor.CreateEditor(noiseTextureSettings);
 			window.position = new Rect(0,0,windowSize.x, windowSize.y);
 			window.minSize = windowSize;
 			window.maxSize = windowSize;
@@ -88,9 +87,8 @@ namespace DudeiNoise
 		private void DrawEditorWindow()
 		{
 			EditorGUI.BeginChangeCheck();
-			EditorGUILayout.Space();
 
-			textureSettingsEditor.DrawDefaultInspector();
+			textureSettingsEditor.DrawCustomInspector();
 			
 			EditorGUILayout.Space();
 			
@@ -101,8 +99,9 @@ namespace DudeiNoise
 			
 			EditorGUILayout.BeginVertical();
 			
-			EditorGUI.PrefixLabel(new Rect(30, 430, 100, 15), 0, new GUIContent("Preview:"));
-			EditorGUI.DrawPreviewTexture(new Rect(30, 445, 340, 340), currentNoiseTexture);
+			EditorGUI.PrefixLabel(new Rect(80, 430, 100, 15), 0, new GUIContent("Preview:"));
+			EditorGUI.DrawPreviewTexture(new Rect(80, 445, 340, 340), currentNoiseTexture);
+			
 			EditorGUILayout.EndVertical();
 			
 			EditorGUILayout.BeginVertical();

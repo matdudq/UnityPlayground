@@ -2,7 +2,7 @@
 
 namespace DudeiNoise
 {
-	public delegate float NoiseMethod(Vector3 point, float frequency);
+	public delegate float NoiseMethod(Vector3 point);
 
 	public static class Noise
 	{
@@ -111,36 +111,32 @@ namespace DudeiNoise
 		};
 	
 		private const int gradientsMask3D = 15;
+
+		private static NoiseTextureSettings lastGeneratedTextureSettings = null;
+
+		private static Texture2D lastGeneratedTexture2D = null;
 		
 		#endregion Variables
 
 		#region Public methods
-		
-		public static float GetProbe(Vector3 point, NoiseSettings generatorSettings)
+
+		public static Color GetProbe(Vector2 point, NoiseTextureSettings generatorSettings)
 		{
-			return GetProbe(point, generatorSettings.NoiseMethod(), generatorSettings.frequency, generatorSettings.octaves, generatorSettings.lacunarity, generatorSettings.persistence, generatorSettings.turbulence, generatorSettings.noiseType,generatorSettings.woodPatternMultiplier);
+			return GetProbe(point.x, point.y, generatorSettings);
 		}
 		
-		public static float GetProbe (Vector3 point, NoiseMethod method, float frequency, int octaves, float lacunarity, float persistence, bool turbulence, NoiseType noiseType, float woodPatternMultiplier)
+		public static Color GetProbe(float x, float y, NoiseTextureSettings generatorSettings)
 		{
-			float sum = method(point, frequency);
-			float amplitude = 1f;
-			float range = 1f;
+			x = Mathf.Clamp01(x);
+			y = Mathf.Clamp01(y);
 
-			for (int i = 1; i < octaves; i++)
+			if (lastGeneratedTextureSettings != generatorSettings)
 			{
-				frequency *= lacunarity;
-				amplitude *= persistence;
-				range += amplitude;
-				float currentSample = turbulence ? Mathf.Abs(method(point, frequency)) : method(point, frequency);
-				sum += currentSample * amplitude;
+				GenerateTextureNoise(ref lastGeneratedTexture2D,generatorSettings);
+				lastGeneratedTextureSettings = generatorSettings;
 			}
-
-			float sample = sum / range;
-			float normalizedSample = NormalizeSample(sample, noiseType);
-			float sampleWithWoodEffect = ApplyWoodEffect(normalizedSample, woodPatternMultiplier);
-
-			return sampleWithWoodEffect;
+			
+			return lastGeneratedTexture2D.GetPixelBilinear(x, y);
 		}
 		
 		public static void GenerateTextureNoise(ref Texture2D texture2D, NoiseTextureSettings textureSettings)
@@ -155,7 +151,7 @@ namespace DudeiNoise
 				texture2D.filterMode = textureSettings.filterMode;
 			}
 
-			Matrix4x4 noiseTRS = Matrix4x4.TRS(textureSettings.positionOffset, Quaternion.Euler(textureSettings.rotationOffset), Vector3.one);
+			Matrix4x4 noiseTRS = Matrix4x4.TRS(textureSettings.noiseSettings.positionOffset, Quaternion.Euler(textureSettings.noiseSettings.rotationOffset), textureSettings.noiseSettings.scaleOffset);
 			
 			Vector3 point00 = noiseTRS.MultiplyPoint3x4(new Vector3(-0.5f,-0.5f));
 			Vector3 point10 = noiseTRS.MultiplyPoint3x4(new Vector3(0.5f,-0.5f));
@@ -184,6 +180,33 @@ namespace DudeiNoise
 		
 		#region Private methods
 
+		private static float GetProbe(Vector3 point, NoiseSettings generatorSettings)
+		{
+			return GetProbe(point, generatorSettings.NoiseMethod(), generatorSettings.octaves, generatorSettings.lacunarity, generatorSettings.persistence, generatorSettings.turbulence, generatorSettings.noiseType,generatorSettings.woodPatternMultiplier);
+		}
+
+		private static float GetProbe (Vector3 point, NoiseMethod method, int octaves, float lacunarity, float persistence, bool turbulence, NoiseType noiseType, float woodPatternMultiplier)
+		{
+			float sum = method(point);
+			float amplitude = 1f;
+			float range = 1f;
+
+			for (int i = 1; i < octaves; i++)
+			{
+				point *= lacunarity;
+				amplitude *= persistence;
+				range += amplitude;
+				float currentSample = turbulence ? Mathf.Abs(method(point)) : method(point);
+				sum += currentSample * amplitude;
+			}
+
+			float sample = sum / range;
+			float normalizedSample = NormalizeSample(sample, noiseType);
+			float sampleWithWoodEffect = ApplyWoodEffect(normalizedSample, woodPatternMultiplier);
+
+			return sampleWithWoodEffect;
+		}
+		
 		private static float NormalizeSample(float sample, NoiseType noiseType)
 		{
 			if (noiseType == NoiseType.Perlin) 
@@ -207,21 +230,18 @@ namespace DudeiNoise
 		
 		#region Basic noise
 
-		private static float Noise1D (Vector3 point, float frequency)
+		private static float Noise1D (Vector3 point)
 		{
-			point *= frequency;
 			return hash[Mathf.FloorToInt(point.x) & hashMask] * (1.0f / hashMask);
 		}
 		
-		private static float Noise2D (Vector3 point, float frequency) {
-			point *= frequency;
+		private static float Noise2D (Vector3 point) {
 			int ix = Mathf.FloorToInt(point.x) & hashMask;
 			int iy = Mathf.FloorToInt(point.y) & hashMask;
 			return hash[hash[ix] + iy] * (1f / hashMask);
 		}
 
-		private static float Noise3D (Vector3 point, float frequency) {
-			point *= frequency;
+		private static float Noise3D (Vector3 point) {
 			int ix = Mathf.FloorToInt(point.x) & hashMask;
 			int iy = Mathf.FloorToInt(point.y) & hashMask;
 			int iz = Mathf.FloorToInt(point.z) & hashMask;
@@ -232,9 +252,8 @@ namespace DudeiNoise
 
 		#region Value noise
 
-		private static float ValueNoise1D (Vector3 point, float frequency)
+		private static float ValueNoise1D (Vector3 point)
 		{
-			point *= frequency;
 			int i0 = Mathf.FloorToInt(point.x);
 			float t = point.x - i0;
 			i0 &= hashMask;
@@ -246,9 +265,8 @@ namespace DudeiNoise
 			return Mathf.Lerp(h0, h1, Smooth(t)) * (1f / hashMask);
 		}
 
-		private static float ValueNoise2D(Vector3 point, float frequency)
+		private static float ValueNoise2D(Vector3 point)
 		{
-			point *= frequency;
 			int ix0 = Mathf.FloorToInt(point.x);
 			int iy0 = Mathf.FloorToInt(point.y);
 
@@ -276,8 +294,8 @@ namespace DudeiNoise
 							  yt) * (1f / hashMask);
 		}
 
-		private static float ValueNoise3D (Vector3 point, float frequency) {
-			point *= frequency;
+		private static float ValueNoise3D (Vector3 point) 
+		{
 			int ix0 = Mathf.FloorToInt(point.x);
 			int iy0 = Mathf.FloorToInt(point.y);
 			int iz0 = Mathf.FloorToInt(point.z);
@@ -318,9 +336,8 @@ namespace DudeiNoise
 
 		#region Perlin noise
 
-		private static float PerlinNoise1D(Vector3 point, float frequency)
+		private static float PerlinNoise1D(Vector3 point)
 		{
-			point *= frequency;
 			int i0 = Mathf.FloorToInt(point.x);
 			float t0 = point.x - i0;
 			float t1 = t0 - 1.0f;
@@ -337,9 +354,8 @@ namespace DudeiNoise
 			
 			return Mathf.Lerp(v0,v1, t) * 2.0f;
 		}
-		private static float PerlinNoise2D(Vector3 point, float frequency)
+		private static float PerlinNoise2D(Vector3 point)
 		{
-			point *= frequency;
 			int ix0 = Mathf.FloorToInt(point.x);
 			int iy0 = Mathf.FloorToInt(point.y);
 			float tx0 = point.x - ix0;
@@ -372,9 +388,8 @@ namespace DudeiNoise
 							 ty) * sqr2;
 		}
 
-		private static float PerlinNoise3D(Vector3 point, float frequency)
+		private static float PerlinNoise3D(Vector3 point)
 		{
-			point *= frequency;
 			int ix0 = Mathf.FloorToInt(point.x);
 			int iy0 = Mathf.FloorToInt(point.y);
 			int iz0 = Mathf.FloorToInt(point.z);
@@ -384,9 +399,11 @@ namespace DudeiNoise
 			float tx1 = tx0 - 1f;
 			float ty1 = ty0 - 1f;
 			float tz1 = tz0 - 1f;
+			
 			ix0 &= hashMask;
 			iy0 &= hashMask;
 			iz0 &= hashMask;
+			
 			int ix1 = ix0 + 1;
 			int iy1 = iy0 + 1;
 			int iz1 = iz0 + 1;
@@ -397,6 +414,7 @@ namespace DudeiNoise
 			int h10 = hash[h1 + iy0];
 			int h01 = hash[h0 + iy1];
 			int h11 = hash[h1 + iy1];
+			
 			Vector3 g000 = gradients3D[hash[h00 + iz0] & gradientsMask3D];
 			Vector3 g100 = gradients3D[hash[h10 + iz0] & gradientsMask3D];
 			Vector3 g010 = gradients3D[hash[h01 + iz0] & gradientsMask3D];

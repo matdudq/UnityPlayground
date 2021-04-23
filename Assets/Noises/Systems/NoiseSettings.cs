@@ -6,8 +6,13 @@ namespace DudeiNoise
 	[Serializable]
 	public class NoiseSettings
 	{
-		[Tooltip("Scales range of noise.")]
-		public float frequency = 100;
+		[Tooltip("You can move though noise surface by that. Position offset in 'noise-space'.")]
+		public Vector3 positionOffset = Vector3.zero;
+		[Tooltip("You can rotate noise surface by that to get more interesting results. Rotation offset in 'noise-space'.")]
+		public Vector3 rotationOffset = Vector3.zero;
+		[Tooltip("Manages frequency of noise, you can scale noise space by that.")]
+		public Vector3 scaleOffset = Vector3.one;
+
 		[Range(1,3), Tooltip("Dimension in which noise will be generated.")]
 		public int dimensions = 3;
 		[Range(1, 8), Tooltip("Octaves represents count of sum iteration during generating noise.")]
