@@ -13,8 +13,8 @@ namespace DudeiNoise
 		#region Variables
 
 		private NoiseTextureSettingsEditor textureSettingsEditor = null;
-		private NoiseTextureSettings textureSettings            = null;
-		private Texture2D     currentNoiseTexture = null;
+		
+		private NoiseTextureWindow noiseTextureWindow = null;
 
 		#endregion Variables
 
@@ -31,14 +31,14 @@ namespace DudeiNoise
 
 		public static void Open(NoiseTextureSettings noiseTextureSettings)
 		{ 
-			Vector2 windowSize = new Vector2(500, 800);
+			Vector2 maxWindowSize = new Vector2(500, 800);
+			Vector2 minWindowSize = new Vector2(500, 500);
 			NoiseGeneratorWindow window = GetWindow<NoiseGeneratorWindow>("Noise Texture Generator");
-			window.textureSettings = noiseTextureSettings;
 			window.textureSettingsEditor = (NoiseTextureSettingsEditor)Editor.CreateEditor(noiseTextureSettings);
-			window.position = new Rect(0,0,windowSize.x, windowSize.y);
-			window.minSize = windowSize;
-			window.maxSize = windowSize;
-			window.CreateNewTexture();
+			window.position = new Rect(0,0,minWindowSize.x, minWindowSize.y);
+			window.minSize = minWindowSize;
+			window.maxSize = maxWindowSize;
+			window.noiseTextureWindow = NoiseTextureWindow.GetWindow(noiseTextureSettings);
 			window.Show();
 		}
 
@@ -67,22 +67,6 @@ namespace DudeiNoise
 
             Open(newPreset);
         }
-
-		private void CreateNewTexture()
-		{
-			//Editor case
-			if (currentNoiseTexture == null)
-			{
-				currentNoiseTexture = new Texture2D(textureSettings.resolution, textureSettings.resolution, TextureFormat.RGB24, true)
-				{
-					name = "Noise",
-					filterMode = textureSettings.filterMode,
-					wrapMode = TextureWrapMode.Clamp
-				};
-			}
-			
-			Noise.GenerateTextureNoise(ref currentNoiseTexture,textureSettings);
-		}
 		
 		private void DrawEditorWindow()
 		{
@@ -94,33 +78,14 @@ namespace DudeiNoise
 			
 			if (EditorGUI.EndChangeCheck())
 			{
-				Noise.GenerateTextureNoise(ref currentNoiseTexture,textureSettings);
+				noiseTextureWindow.RegenerateTexture();
+				noiseTextureWindow.Repaint();
 			}
 			
-			EditorGUILayout.BeginVertical();
-			
-			EditorGUI.PrefixLabel(new Rect(80, 430, 100, 15), 0, new GUIContent("Preview:"));
-			EditorGUI.DrawPreviewTexture(new Rect(80, 445, 340, 340), currentNoiseTexture);
-			
-			EditorGUILayout.EndVertical();
-			
-			EditorGUILayout.BeginVertical();
-
 			if (GUILayout.Button("Save Texture"))
 			{
-				if ( textureSettings.exportFolder.IsAssigned)
-				{
-					string path =  textureSettings.exportFolder.Path + $"/{textureSettings.noiseSettings.noiseType}{textureSettings.noiseSettings.dimensions}D_Noise_{textureSettings.resolution}.png";
-					File.WriteAllBytes(path, currentNoiseTexture.EncodeToPNG());
-					AssetDatabase.Refresh();
-				}
-				else
-				{
-					GameConsole.LogError(this, "Cannot save texture! Export folder not set up.");
-				}
+				noiseTextureWindow.SaveTexture();
 			}
-			
-			EditorGUILayout.EndVertical();
 		}
 
 		#endregion Private methods
