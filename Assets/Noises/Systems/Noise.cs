@@ -2,7 +2,7 @@
 
 namespace DudeiNoise
 {
-	public delegate float NoiseMethod(Vector3 point);
+	public delegate float NoiseMethod(Vector3 point, int tillingPeriod, bool tillingEnabled);
 
 	public static class Noise
 	{
@@ -111,83 +111,52 @@ namespace DudeiNoise
 		};
 	
 		private const int gradientsMask3D = 15;
-
-		private static NoiseTextureSettings lastGeneratedTextureSettings = null;
-
-		private static Texture2D lastGeneratedTexture2D = null;
 		
 		#endregion Variables
 
 		#region Public methods
-
-		public static Color GetProbe(Vector2 point, NoiseTextureSettings generatorSettings)
-		{
-			return GetProbe(point.x, point.y, generatorSettings);
-		}
 		
-		public static Color GetProbe(float x, float y, NoiseTextureSettings generatorSettings)
+		public static void GenerateNoiseTexture(ref float[] textureValues, NoiseSettings textureSettings, int resolution)
 		{
-			x = Mathf.Clamp01(x);
-			y = Mathf.Clamp01(y);
-
-			if (lastGeneratedTextureSettings != generatorSettings)
-			{
-				GenerateTextureNoise(ref lastGeneratedTexture2D,generatorSettings);
-				lastGeneratedTextureSettings = generatorSettings;
-			}
-			
-			return lastGeneratedTexture2D.GetPixelBilinear(x, y);
-		}
-		
-		public static void GenerateTextureNoise(ref Texture2D texture2D, NoiseTextureSettings textureSettings)
-		{
-			if (texture2D.width != textureSettings.resolution)
-			{
-				texture2D.Resize( textureSettings.resolution, textureSettings.resolution);
-			}
-
-			if (texture2D.filterMode != textureSettings.filterMode)
-			{
-				texture2D.filterMode = textureSettings.filterMode;
-			}
-
-			Matrix4x4 noiseTRS = Matrix4x4.TRS(textureSettings.noiseSettings.positionOffset, Quaternion.Euler(textureSettings.noiseSettings.rotationOffset), textureSettings.noiseSettings.scaleOffset);
+			Matrix4x4 noiseTRS = Matrix4x4.TRS(textureSettings.positionOffset, Quaternion.Euler(textureSettings.rotationOffset), textureSettings.scaleOffset);
 			
 			Vector3 point00 = noiseTRS.MultiplyPoint3x4(new Vector3(-0.5f,-0.5f));
 			Vector3 point10 = noiseTRS.MultiplyPoint3x4(new Vector3(0.5f,-0.5f));
 			Vector3 point01 = noiseTRS.MultiplyPoint3x4(new Vector3(-0.5f,0.5f));
 			Vector3 point11 = noiseTRS.MultiplyPoint3x4(new Vector3(0.5f,0.5f));
 
-			float stepSize = 1.0f /  textureSettings.resolution;
-			
-			for (int y = 0; y <  textureSettings.resolution; y++)
+			float stepSize = 1.0f /  resolution;
+
+			for (int y = 0; y < resolution; y++)
 			{
 				Vector3 point0 = Vector3.Lerp(point00,point01, (y + 0.5f) * stepSize);
 				Vector3 point1 = Vector3.Lerp(point10,point11, (y + 0.5f) * stepSize);
 				
-				for (int x = 0; x <  textureSettings.resolution; x++)
+				for (int x = 0; x < resolution; x++)
 				{
 					Vector3 point = Vector3.Lerp(point0,point1, (x + 0.5f) * stepSize);
-					float sample = GetProbe(point,textureSettings.noiseSettings);
-					texture2D.SetPixel(x,y, textureSettings.colorGradient.Evaluate(sample));
+					float sample = GetProbe(point,textureSettings);
+					textureValues[y * resolution + x] = sample;
 				}
 			}
-			
-			texture2D.Apply();
 		}
 		
 		#endregion Public methods
 		
 		#region Private methods
-
+		
 		private static float GetProbe(Vector3 point, NoiseSettings generatorSettings)
 		{
-			return GetProbe(point, generatorSettings.NoiseMethod(), generatorSettings.octaves, generatorSettings.lacunarity, generatorSettings.persistence, generatorSettings.turbulence, generatorSettings.noiseType,generatorSettings.woodPatternMultiplier);
+			return GetProbe(point, generatorSettings.NoiseMethod(),
+							generatorSettings.tillingEnabled, generatorSettings.tillingPeriod,
+							generatorSettings.octaves, generatorSettings.lacunarity, 
+							generatorSettings.persistence, generatorSettings.turbulence, 
+							generatorSettings.noiseType,generatorSettings.woodPatternMultiplier);
 		}
 
-		private static float GetProbe (Vector3 point, NoiseMethod method, int octaves, float lacunarity, float persistence, bool turbulence, NoiseType noiseType, float woodPatternMultiplier)
+		private static float GetProbe (Vector3 point, NoiseMethod method, bool tillingEnabled, int tillingPeriod, int octaves, float lacunarity, float persistence, bool turbulence, NoiseType noiseType, float woodPatternMultiplier)
 		{
-			float sum = method(point);
+			float sum = method(point,tillingPeriod,tillingEnabled);
 			float amplitude = 1f;
 			float range = 1f;
 
@@ -196,15 +165,15 @@ namespace DudeiNoise
 				point *= lacunarity;
 				amplitude *= persistence;
 				range += amplitude;
-				float currentSample = turbulence ? Mathf.Abs(method(point)) : method(point);
+				float currentSample = turbulence ? Mathf.Abs(method(point,tillingPeriod,tillingEnabled)) : method(point,tillingPeriod,tillingEnabled);
 				sum += currentSample * amplitude;
 			}
 
 			float sample = sum / range;
 			float normalizedSample = NormalizeSample(sample, noiseType);
-			float sampleWithWoodEffect = ApplyWoodEffect(normalizedSample, woodPatternMultiplier);
+			float sampleWithCustomPattern = ApplyWoodEffect(normalizedSample, woodPatternMultiplier);
 
-			return sampleWithWoodEffect;
+			return sampleWithCustomPattern;
 		}
 		
 		private static float NormalizeSample(float sample, NoiseType noiseType)
@@ -230,55 +199,106 @@ namespace DudeiNoise
 		
 		#region Basic noise
 
-		private static float Noise1D (Vector3 point)
+		private static float Noise1D (Vector3 point, int tillingPeriod , bool tillingEnabled )
 		{
-			return hash[Mathf.FloorToInt(point.x) & hashMask] * (1.0f / hashMask);
+			int i0 = Mathf.FloorToInt(point.x);
+			
+			if (tillingEnabled)
+			{
+				i0 = PositiveModulo(i0, tillingPeriod);
+			}
+			
+			return hash[i0 & hashMask] * (1.0f / hashMask);
 		}
 		
-		private static float Noise2D (Vector3 point) {
-			int ix = Mathf.FloorToInt(point.x) & hashMask;
-			int iy = Mathf.FloorToInt(point.y) & hashMask;
-			return hash[hash[ix] + iy] * (1f / hashMask);
+		private static float Noise2D (Vector3 point, int tillingPeriod, bool tillingEnabled) 
+		{
+			int ix = Mathf.FloorToInt(point.x);
+			int iy = Mathf.FloorToInt(point.y);
+			
+			if (tillingEnabled)
+			{
+				ix = PositiveModulo(ix, tillingPeriod);
+				iy = PositiveModulo(iy, tillingPeriod);
+			}
+			
+			return hash[hash[ix & hashMask] + iy & hashMask] * (1f / hashMask);
 		}
 
-		private static float Noise3D (Vector3 point) {
-			int ix = Mathf.FloorToInt(point.x) & hashMask;
-			int iy = Mathf.FloorToInt(point.y) & hashMask;
-			int iz = Mathf.FloorToInt(point.z) & hashMask;
-			return hash[hash[hash[ix] + iy] + iz] * (1f / hashMask);
+		private static float Noise3D (Vector3 point, int tillingPeriod, bool tillingEnabled)
+		{
+			int ix = Mathf.FloorToInt(point.x);
+			int iy = Mathf.FloorToInt(point.y);
+			int iz = Mathf.FloorToInt(point.z);
+			
+			if (tillingEnabled)
+			{
+				ix = PositiveModulo(ix, tillingPeriod);
+				iy = PositiveModulo(iy, tillingPeriod);
+				iz = PositiveModulo(iz, tillingPeriod);
+			}
+			
+			return hash[hash[hash[ix & hashMask] + iy & hashMask] + iz & hashMask] * (1f / hashMask);
 		}
 
 		#endregion Basic noise
 
 		#region Value noise
 
-		private static float ValueNoise1D (Vector3 point)
+		private static float ValueNoise1D (Vector3 point, int tillingPeriod, bool tillingEnabled)
 		{
 			int i0 = Mathf.FloorToInt(point.x);
+			
 			float t = point.x - i0;
+			
+			if (tillingEnabled)
+			{
+				i0 = PositiveModulo(i0, tillingPeriod);
+			}
+
 			i0 &= hashMask;
+			
 			int i1 = i0 + 1;
 
+			if (tillingEnabled)
+			{
+				i1 = PositiveModulo(i1, tillingPeriod);
+			}
+
+			
 			int h0 = hash[i0];
 			int h1 = hash[i1];
 
 			return Mathf.Lerp(h0, h1, Smooth(t)) * (1f / hashMask);
 		}
 
-		private static float ValueNoise2D(Vector3 point)
+		private static float ValueNoise2D(Vector3 point, int tillingPeriod, bool tillingEnabled)
 		{
 			int ix0 = Mathf.FloorToInt(point.x);
 			int iy0 = Mathf.FloorToInt(point.y);
 
 			float xt = point.x - ix0;
 			float yt = point.y - iy0;
-
+			
+			if (tillingEnabled)
+			{
+				ix0 = PositiveModulo(ix0, tillingPeriod);
+				iy0 = PositiveModulo(iy0, tillingPeriod);
+			}
+			
 			ix0 &= hashMask;
 			iy0 &= hashMask;
 
 			int ix1 = ix0 + 1;
 			int iy1 = iy0 + 1;
 
+			if (tillingEnabled)
+			{
+				ix1 = PositiveModulo(ix1, tillingPeriod);
+				iy1 = PositiveModulo(iy1, tillingPeriod);
+			}
+
+			
 			int h0 = hash[ix0];
 			int h1 = hash[ix1];
 
@@ -289,26 +309,44 @@ namespace DudeiNoise
 
 			xt = Smooth(xt);
 			yt = Smooth(yt);
+			
 			return Mathf.Lerp(Mathf.Lerp(h00, h10, xt),
 							  Mathf.Lerp(h01, h11, xt),
 							  yt) * (1f / hashMask);
 		}
 
-		private static float ValueNoise3D (Vector3 point) 
+		private static float ValueNoise3D (Vector3 point, int tillingPeriod, bool tillingEnabled) 
 		{
 			int ix0 = Mathf.FloorToInt(point.x);
 			int iy0 = Mathf.FloorToInt(point.y);
 			int iz0 = Mathf.FloorToInt(point.z);
+			
 			float tx = point.x - ix0;
 			float ty = point.y - iy0;
 			float tz = point.z - iz0;
+			
+			if (tillingEnabled)
+			{
+				ix0 = PositiveModulo(ix0, tillingPeriod);
+				iy0 = PositiveModulo(iy0, tillingPeriod);
+				iz0 = PositiveModulo(iz0, tillingPeriod);
+			}
+			
 			ix0 &= hashMask;
 			iy0 &= hashMask;
 			iz0 &= hashMask;
+			
 			int ix1 = ix0 + 1;
 			int iy1 = iy0 + 1;
 			int iz1 = iz0 + 1;
 
+			if (tillingEnabled)
+			{
+				ix1 = PositiveModulo(ix1, tillingPeriod);
+				iy1 = PositiveModulo(iy1, tillingPeriod);
+				iz1 = PositiveModulo(iz1, tillingPeriod);
+			}
+			
 			int h0 = hash[ix0];
 			int h1 = hash[ix1];
 			int h00 = hash[h0 + iy0];
@@ -327,6 +365,7 @@ namespace DudeiNoise
 			tx = Smooth(tx);
 			ty = Smooth(ty);
 			tz = Smooth(tz);
+			
 			return Mathf.Lerp(Mathf.Lerp(Mathf.Lerp(h000, h100, tx), Mathf.Lerp(h010, h110, tx), ty),
 							  Mathf.Lerp(Mathf.Lerp(h001, h101, tx), Mathf.Lerp(h011, h111, tx), ty),
 							  tz) * (1f / hashMask);
@@ -336,13 +375,25 @@ namespace DudeiNoise
 
 		#region Perlin noise
 
-		private static float PerlinNoise1D(Vector3 point)
+		private static float PerlinNoise1D(Vector3 point, int tillingPeriod, bool tillingEnabled)
 		{
 			int i0 = Mathf.FloorToInt(point.x);
 			float t0 = point.x - i0;
 			float t1 = t0 - 1.0f;
+
+			if (tillingEnabled)
+			{
+				i0 = PositiveModulo(i0, tillingPeriod);
+			}
+			
 			i0 &= hashMask;
+			
 			int i1 = i0 + 1;
+
+			if (tillingEnabled)
+			{
+				i1 = PositiveModulo(i1, tillingPeriod);
+			}
 
 			float g0 = gradients1D[hash[i0] & gradientsMask1D];
 			float g1 = gradients1D[hash[i1] & gradientsMask1D];
@@ -354,19 +405,34 @@ namespace DudeiNoise
 			
 			return Mathf.Lerp(v0,v1, t) * 2.0f;
 		}
-		private static float PerlinNoise2D(Vector3 point)
+		private static float PerlinNoise2D(Vector3 point, int tillingPeriod, bool tillingEnabled)
 		{
 			int ix0 = Mathf.FloorToInt(point.x);
 			int iy0 = Mathf.FloorToInt(point.y);
+			
 			float tx0 = point.x - ix0;
 			float ty0 = point.y - iy0;
 			float tx1 = tx0 - 1f;
 			float ty1 = ty0 - 1f;
+			
+			if (tillingEnabled)
+			{
+				ix0 = PositiveModulo(ix0, tillingPeriod);
+				iy0 = PositiveModulo(iy0, tillingPeriod);
+			}
+
 			ix0 &= hashMask;
 			iy0 &= hashMask;
+			
 			int ix1 = ix0 + 1;
 			int iy1 = iy0 + 1;
-		
+
+			if (tillingEnabled)
+			{
+				ix1 = PositiveModulo(ix1, tillingPeriod);
+				iy1 = PositiveModulo(iy1, tillingPeriod);
+			}
+
 			int h0 = hash[ix0];
 			int h1 = hash[ix1];
 			
@@ -382,24 +448,32 @@ namespace DudeiNoise
 		
 			float tx = Smooth(tx0);
 			float ty = Smooth(ty0);
-			return Mathf.Lerp(
-							 Mathf.Lerp(v00, v10, tx),
+			
+			return Mathf.Lerp(Mathf.Lerp(v00, v10, tx),
 							 Mathf.Lerp(v01, v11, tx),
 							 ty) * sqr2;
 		}
 
-		private static float PerlinNoise3D(Vector3 point)
+		private static float PerlinNoise3D(Vector3 point, int tillingPeriod, bool tillingEnabled)
 		{
 			int ix0 = Mathf.FloorToInt(point.x);
 			int iy0 = Mathf.FloorToInt(point.y);
 			int iz0 = Mathf.FloorToInt(point.z);
+			
 			float tx0 = point.x - ix0;
 			float ty0 = point.y - iy0;
 			float tz0 = point.z - iz0;
 			float tx1 = tx0 - 1f;
 			float ty1 = ty0 - 1f;
 			float tz1 = tz0 - 1f;
-			
+
+			if (tillingEnabled)
+			{
+				ix0 = PositiveModulo(ix0, tillingPeriod);
+				iy0 = PositiveModulo(iy0, tillingPeriod);
+				iz0 = PositiveModulo(iz0, tillingPeriod);
+			}
+
 			ix0 &= hashMask;
 			iy0 &= hashMask;
 			iz0 &= hashMask;
@@ -408,6 +482,13 @@ namespace DudeiNoise
 			int iy1 = iy0 + 1;
 			int iz1 = iz0 + 1;
 		
+			if (tillingEnabled)
+			{
+				ix1 = PositiveModulo(ix1, tillingPeriod);
+				iy1 = PositiveModulo(iy1, tillingPeriod);
+				iz1 = PositiveModulo(iz1, tillingPeriod);
+			}
+			
 			int h0 = hash[ix0];
 			int h1 = hash[ix1];
 			int h00 = hash[h0 + iy0];
@@ -456,6 +537,11 @@ namespace DudeiNoise
 		
 		private static float Dot (Vector3 g, float x, float y, float z) {
 			return g.x * x + g.y * y + g.z * z;
+		}
+		
+		private static int PositiveModulo(int divident, int divisor){
+			int positiveDivident = divident % divisor + divisor;
+			return positiveDivident % divisor;
 		}
 		
 		#endregion Calculation functions

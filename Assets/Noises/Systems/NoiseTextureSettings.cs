@@ -1,6 +1,6 @@
 ﻿using System;
-using UnityEditor;
 using UnityEngine;
+using Utilities;
 using Utilities.Editor;
 
 namespace DudeiNoise
@@ -22,8 +22,38 @@ namespace DudeiNoise
 		[Tooltip("Filter mode of rendered texture. Good to see different ways of filtering to se how noise works.")]
 		public FilterMode filterMode = FilterMode.Point;
 		
-		public NoiseSettings noiseSettings = null;
+		public NoiseSettings redChannelNoiseSettings = null;
+		
+		public NoiseSettings greenChannelNoiseSettings = null;
+		
+		public NoiseSettings blueChannelNoiseSettings = null;
+		
+		public NoiseSettings alphaChannelNoiseSettings = null;
 
 		#endregion Variables
+
+		#region Public methods
+
+		public NoiseSettings GetNoiseSettingsForChannel(Channel channel)
+		{
+			switch (channel)
+			{
+				case Channel.RED:
+					return redChannelNoiseSettings;
+				case Channel.GREEN:
+					return greenChannelNoiseSettings;
+				case Channel.BLUE:
+					return blueChannelNoiseSettings;
+				case Channel.ALPHA:
+					return alphaChannelNoiseSettings;
+				case Channel.FULL:
+					return redChannelNoiseSettings;
+			}
+
+			GameConsole.LogError(this, $"Something goes wrong with defined channel {channel}");
+			return null;
+		}
+
+		#endregion Public methods
 	}
 }
