@@ -9,9 +9,11 @@ namespace DudeiNoise.Editor
 		private class CustomSpaceTab : INoiseGeneratorWindowTab
 		{
 			private GUIContent buttonContent = null;
-			private GUIContent noiseDataHeaderGC = null;
 			
-			private GUIContent customPatternsHeaderGC = null;
+			private GUIContent noiseTypeSectionHeaderGC = null;
+			private GUIContent customPatternsSectionHeaderGC = null;	
+			private GUIContent spaceSectionHeaderGC = null;
+			private GUIContent octavesSectionHeaderGC = null;
 			
 			private SerializedProperty positionOffsetSP = null;
 			private SerializedProperty rotationOffsetSP = null;
@@ -37,17 +39,20 @@ namespace DudeiNoise.Editor
 
 			private bool isNoiseTypeSectionFolded = false;
 			private bool isSpaceSectionFolded = false;
-			private bool isLayersSectionFolded = false;
+			private bool isOctavesSectionFolded = false;
 			private bool isCustomPatternsSectionFolded = false;
 			
 			public CustomSpaceTab(NoiseGeneratorWindow owner)
 			{
 				this.owner = owner;
 				
-				this.buttonContent = new GUIContent("Custom Space Mode");
-				noiseDataHeaderGC = new GUIContent("Noise settings");
-				customPatternsHeaderGC = new GUIContent("Custom patterns");
-
+				buttonContent = new GUIContent("Custom Space Mode");
+				
+				noiseTypeSectionHeaderGC = new GUIContent("Noise Type");
+				customPatternsSectionHeaderGC = new GUIContent("Custom patterns");
+				spaceSectionHeaderGC = new GUIContent("Space settings");
+				octavesSectionHeaderGC = new GUIContent("Octaves settings");
+				
 				UpdateActiveSerializedProperties();
 			}
 
@@ -80,9 +85,9 @@ namespace DudeiNoise.Editor
 					};
 				}
 				
-				DrawNoiseTypeTab();
-				DrawSpaceSettings();
-				DrawLayersSettings();
+				DrawNoiseTypeSection();
+				DrawSpaceSettingsSection();
+				DrawOctavesSettings();
 				DrawCustomPatternsTab();
 			}
 
@@ -108,40 +113,107 @@ namespace DudeiNoise.Editor
 			
 			private void DrawCustomPatternsTab()
 			{
-				GUILayout.Label(customPatternsHeaderGC,headerStyle);
-	            
-				EditorGUILayout.Space();
+				isCustomPatternsSectionFolded = EditorGUILayout.BeginFoldoutHeaderGroup(isCustomPatternsSectionFolded, customPatternsSectionHeaderGC);
 
-				EditorGUILayout.PropertyField(woodPatternMultiplierSP);
-				EditorGUILayout.PropertyField(turbulenceSP);
-			}
+				if (isCustomPatternsSectionFolded)
+				{
+					GUILayout.BeginVertical(owner.sectionStyle);
+					GUILayout.Space(10);
+					
+					GUILayout.BeginHorizontal();
+					EditorGUILayout.PropertyField(woodPatternMultiplierSP);
+					GUILayout.EndHorizontal();
+					
+					GUILayout.BeginHorizontal();
+					EditorGUILayout.PropertyField(turbulenceSP);
+					GUILayout.EndHorizontal();
 
-			private void DrawNoiseTypeTab()
-			{
-				GUILayout.Label(noiseDataHeaderGC,headerStyle);
+					GUILayout.Space(10);
+					GUILayout.EndVertical();
+				}	
 				
-				EditorGUILayout.PropertyField(noiseTypeSP);
-				EditorGUILayout.PropertyField(dimensionsSP);
-
-				EditorGUILayout.Space();
+				EditorGUILayout.EndFoldoutHeaderGroup();
 			}
 
-			private void DrawSpaceSettings()
+			private void DrawNoiseTypeSection()
 			{
-				EditorGUILayout.PropertyField(positionOffsetSP);
-				EditorGUILayout.PropertyField(rotationOffsetSP);
-				EditorGUILayout.PropertyField(scaleOffsetSP);
+				isNoiseTypeSectionFolded = EditorGUILayout.BeginFoldoutHeaderGroup(isNoiseTypeSectionFolded, noiseTypeSectionHeaderGC);
+				
+				if (isNoiseTypeSectionFolded)
+				{
+					GUILayout.BeginVertical(owner.sectionStyle);
+					GUILayout.Space(10);
+					
+					GUILayout.BeginHorizontal();
+					EditorGUILayout.PropertyField(noiseTypeSP);				
+					GUILayout.EndHorizontal();
 
-				EditorGUILayout.Space();
+					GUILayout.BeginHorizontal();
+					EditorGUILayout.PropertyField(dimensionsSP);
+					GUILayout.EndHorizontal();
+
+
+					GUILayout.Space(10);
+					GUILayout.EndVertical();
+				}
+				
+				EditorGUILayout.EndFoldoutHeaderGroup();
 			}
 
-			private void DrawLayersSettings()
+			private void DrawSpaceSettingsSection()
 			{
-				EditorGUILayout.PropertyField(octavesSP);
-				EditorGUILayout.PropertyField(lacunaritySP);
-				EditorGUILayout.PropertyField(persistenceSP);
-	            
-				EditorGUILayout.Space();
+				isOctavesSectionFolded = EditorGUILayout.BeginFoldoutHeaderGroup(isOctavesSectionFolded, spaceSectionHeaderGC);
+
+				if (isOctavesSectionFolded)
+				{
+					GUILayout.BeginVertical(owner.sectionStyle);
+					GUILayout.Space(10);
+					
+					GUILayout.BeginHorizontal();
+					EditorGUILayout.PropertyField(positionOffsetSP);
+					GUILayout.EndHorizontal();
+
+					GUILayout.BeginHorizontal();
+					EditorGUILayout.PropertyField(rotationOffsetSP);
+					GUILayout.EndHorizontal();
+
+					GUILayout.BeginHorizontal();
+					EditorGUILayout.PropertyField(scaleOffsetSP);
+					GUILayout.EndHorizontal();
+
+					GUILayout.Space(10);
+					GUILayout.EndVertical();
+				}
+				
+				EditorGUILayout.EndFoldoutHeaderGroup();
+			}
+
+			private void DrawOctavesSettings()
+			{
+				isOctavesSectionFolded = EditorGUILayout.BeginFoldoutHeaderGroup(isOctavesSectionFolded, octavesSectionHeaderGC);
+				
+				if (isOctavesSectionFolded)
+				{
+					GUILayout.BeginVertical(owner.sectionStyle);
+					GUILayout.Space(10);
+					
+					GUILayout.BeginHorizontal();
+					EditorGUILayout.PropertyField(octavesSP);
+					GUILayout.EndHorizontal();
+
+					GUILayout.BeginHorizontal();
+					EditorGUILayout.PropertyField(lacunaritySP);
+					GUILayout.EndHorizontal();
+
+					GUILayout.BeginHorizontal();
+					EditorGUILayout.PropertyField(persistenceSP);
+					GUILayout.EndHorizontal();
+
+					GUILayout.Space(10);
+					GUILayout.EndVertical();
+				}
+
+				EditorGUILayout.EndFoldoutHeaderGroup();
 			}
 		}
 	}

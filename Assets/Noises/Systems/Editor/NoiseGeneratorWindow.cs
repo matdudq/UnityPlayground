@@ -23,11 +23,6 @@ namespace DudeiNoise.Editor
 		private Color[] greenChanelTextureArray = null;
 		private Color[] blueChanelTextureArray = null;
 		private Color[] alphaChanelTextureArray = null;
-
-		private SerializedProperty redChanelSettingsProperty = null;
-		private SerializedProperty greenChanelSettingsProperty = null;
-		private SerializedProperty blueChanelSettingsProperty = null;
-		private SerializedProperty alphaChanelSettingsProperty = null;
 		
 		private Dictionary<Type,INoiseGeneratorWindowTab> tabs = null;
 		private INoiseGeneratorWindowTab activeTab = null;
@@ -38,6 +33,17 @@ namespace DudeiNoise.Editor
 		
 		#endregion Variables
 
+		#region Variables - SerializedProperties
+
+		private SerializedProperty redChanelSettingsProperty = null;
+		private SerializedProperty greenChanelSettingsProperty = null;
+		private SerializedProperty blueChanelSettingsProperty = null;
+		private SerializedProperty alphaChanelSettingsProperty = null;
+
+		
+		
+		#endregion Variables - SerializedProperties
+		
 		#region Properties
 
 		private NoiseSettings CurrentNoiseSettings
@@ -96,15 +102,14 @@ namespace DudeiNoise.Editor
 		#region Public methods
 
 		public static void Open(NoiseTextureSettings settings)
-		{ 
-			Vector2 maxWindowSize = new Vector2(500, 800);
-			Vector2 minWindowSize = new Vector2(500, 500);
+		{
+			Vector2 windowSize = new Vector2(500, 600);
 			
 			NoiseGeneratorWindow window = GetWindow<NoiseGeneratorWindow>("Noise Texture Generator");
 			
-			window.position = new Rect(0,0,minWindowSize.x, minWindowSize.y);
-			window.minSize = minWindowSize;
-			window.maxSize = maxWindowSize;
+			window.position = new Rect(0,0,windowSize.x, windowSize.y);
+			window.minSize = windowSize;
+			window.maxSize = windowSize;
 
 			window.Initialize(settings);
 			
@@ -201,10 +206,11 @@ namespace DudeiNoise.Editor
 			EditorGUI.BeginChangeCheck();
 			
 			scrollPos = GUILayout.BeginScrollView(scrollPos, GUILayout.ExpandHeight(true));
+			
 			EditorGUILayout.BeginVertical();
 			
 			textureSettingsEditor.DrawCustomInspector();
-			
+
 			DrawWindowTabs();
 		
 			if (EditorGUI.EndChangeCheck())
@@ -214,14 +220,18 @@ namespace DudeiNoise.Editor
 				RegenerateTextures();
 			}
 
-			DrawSaveAndChannelsButtons();
-			
 			EditorGUILayout.EndVertical();
 			EditorGUILayout.EndScrollView();
+			
+			DrawSaveAndChannelsButtons();
+			
+			EditorGUILayout.Space(3);
 		}
 
 		private void DrawWindowTabs()
 		{
+			GUILayout.BeginVertical(sectionStyle);
+
 			GUILayout.BeginHorizontal();
 			
 			foreach (INoiseGeneratorWindowTab tab in tabs.Values)
@@ -234,9 +244,12 @@ namespace DudeiNoise.Editor
 			}
 			
 			GUILayout.EndHorizontal();
-			
+
 			activeTab.DrawInspector();
 			
+			GUILayout.FlexibleSpace();
+			EditorGUILayout.EndVertical();
+
 			EditorGUILayout.Space();
 		}
 

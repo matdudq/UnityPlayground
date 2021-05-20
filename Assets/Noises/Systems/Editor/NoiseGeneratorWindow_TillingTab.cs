@@ -9,10 +9,13 @@ namespace DudeiNoise.Editor
 		private class TillingTab : INoiseGeneratorWindowTab
 		{
 			private GUIContent buttonContent = null;
-			private GUIContent noiseDataHeaderGC = null;
 			
-			private GUIContent customPatternsHeaderGC = null;
-		
+			private GUIContent noiseTypeSectionHeaderGC = null;
+			private GUIContent customPatternsSectionHeaderGC = null;
+			private GUIContent frequencySectionHeaderGC = null;
+			private GUIContent octavesSectionHeaderGC = null;
+			
+			
 			private SerializedProperty positionOffsetSP = null;
 			private SerializedProperty scaleOffsetSP    = null;
 			
@@ -29,24 +32,27 @@ namespace DudeiNoise.Editor
 		
 			private SerializedProperty noiseTypeSP = null;
 
-			private bool isNoiseTypeSectionFolded = false;
-			private bool isSpaceSettingsSectionFolded = false;
-			private bool isLayersSettingsSectionFolded = false;
-			private bool isCustomPatternsSectionFolded = false;
-			
 			private NoiseGeneratorWindow owner;
 			
 			private float frequencyValue = 0;
 		
 			private bool useAdvancedSpaceSettings = false;
 			
+			private bool isNoiseTypeSectionFolded = false;
+			private bool isFrequencySectionFolded = false;
+			private bool isLayersSectionFolded = false;
+			private bool isCustomPatternsSectionFolded = false;
+			
 			public TillingTab(NoiseGeneratorWindow owner)
 			{
 				this.owner = owner;
 				
-				this.buttonContent = new GUIContent("Tilling Mode");
-				noiseDataHeaderGC = new GUIContent("Noise settings");
-				customPatternsHeaderGC = new GUIContent("Custom patterns");
+				buttonContent = new GUIContent("Tilling Mode");
+				
+				noiseTypeSectionHeaderGC = new GUIContent("Noise Type");
+				customPatternsSectionHeaderGC = new GUIContent("Custom patterns");
+				frequencySectionHeaderGC = new GUIContent("Frequency settings");
+				octavesSectionHeaderGC = new GUIContent("Octaves settings");
 				
 				UpdateActiveSerializedProperties();
 			
@@ -90,7 +96,7 @@ namespace DudeiNoise.Editor
 			public void DrawInspector()
 			{
 				DrawNoiseTypeSection();
-				DrawSpaceSettingsSection();
+				DrawFrequencySection();
 				DrawLayersSettingsSection();
 				DrawCustomPatternsSection();
 			}
@@ -102,7 +108,7 @@ namespace DudeiNoise.Editor
 
 			private void DrawCustomPatternsSection()
 			{
-				isCustomPatternsSectionFolded = EditorGUILayout.BeginFoldoutHeaderGroup(isCustomPatternsSectionFolded, customPatternsHeaderGC);
+				isCustomPatternsSectionFolded = EditorGUILayout.BeginFoldoutHeaderGroup(isCustomPatternsSectionFolded, customPatternsSectionHeaderGC);
 
 				if (isCustomPatternsSectionFolded)
 				{
@@ -126,7 +132,7 @@ namespace DudeiNoise.Editor
 
 			private void DrawNoiseTypeSection()
 			{
-				isNoiseTypeSectionFolded = EditorGUILayout.BeginFoldoutHeaderGroup(isNoiseTypeSectionFolded, noiseDataHeaderGC);
+				isNoiseTypeSectionFolded = EditorGUILayout.BeginFoldoutHeaderGroup(isNoiseTypeSectionFolded, noiseTypeSectionHeaderGC);
 				
 				if (isNoiseTypeSectionFolded)
 				{
@@ -152,11 +158,11 @@ namespace DudeiNoise.Editor
 				EditorGUILayout.EndFoldoutHeaderGroup();
 			}
 
-			private void DrawSpaceSettingsSection()
+			private void DrawFrequencySection()
 			{
-				isSpaceSettingsSectionFolded = EditorGUILayout.BeginFoldoutHeaderGroup(isSpaceSettingsSectionFolded, "Frequency settings");
+				isFrequencySectionFolded = EditorGUILayout.BeginFoldoutHeaderGroup(isFrequencySectionFolded, frequencySectionHeaderGC);
 
-				if (isSpaceSettingsSectionFolded)
+				if (isFrequencySectionFolded)
 				{
 					GUILayout.BeginVertical(owner.sectionStyle);
 					GUILayout.Space(10);
@@ -178,9 +184,9 @@ namespace DudeiNoise.Editor
 
 			private void DrawLayersSettingsSection()
 			{
-				isLayersSettingsSectionFolded = EditorGUILayout.BeginFoldoutHeaderGroup(isLayersSettingsSectionFolded, "Octaves settings");
+				isLayersSectionFolded = EditorGUILayout.BeginFoldoutHeaderGroup(isLayersSectionFolded, octavesSectionHeaderGC);
 				
-				if (isLayersSettingsSectionFolded)
+				if (isLayersSectionFolded)
 				{
 					GUILayout.BeginVertical(owner.sectionStyle);
 					GUILayout.Space(10);

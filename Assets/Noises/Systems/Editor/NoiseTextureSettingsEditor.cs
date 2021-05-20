@@ -54,9 +54,7 @@ namespace DudeiNoise.Editor
 				serializedObject.Update();
 				
 				GUILayout.Label(textureDataHeaderGC,headerStyle);
-				
-				EditorGUILayout.Space();
-				
+
 				EditorGUI.BeginChangeCheck();
 				
 				EditorGUILayout.PropertyField(exportFolderSP);
