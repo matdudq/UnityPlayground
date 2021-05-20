@@ -15,85 +15,56 @@ MonoBehaviour:
   exportFolder:
     guid: 
   resolution: 256
-  colorGradient:
-    serializedVersion: 2
-    key0: {r: 1, g: 1, b: 1, a: 1}
-    key1: {r: 1, g: 1, b: 1, a: 1}
-    key2: {r: 0, g: 0, b: 0, a: 0}
-    key3: {r: 0, g: 0, b: 0, a: 0}
-    key4: {r: 0, g: 0, b: 0, a: 0}
-    key5: {r: 0, g: 0, b: 0, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
-    key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 0
-    ctime1: 65535
-    ctime2: 0
-    ctime3: 0
-    ctime4: 0
-    ctime5: 0
-    ctime6: 0
-    ctime7: 0
-    atime0: 0
-    atime1: 65535
-    atime2: 0
-    atime3: 0
-    atime4: 0
-    atime5: 0
-    atime6: 0
-    atime7: 0
-    m_Mode: 0
-    m_NumColorKeys: 2
-    m_NumAlphaKeys: 2
   filterMode: 0
   redChannelNoiseSettings:
-    positionOffset: {x: 0, y: 0, z: 0}
+    positionOffset: {x: 1.5, y: 0, z: 0}
     rotationOffset: {x: 0, y: 0, z: 0}
-    scaleOffset: {x: 1, y: 1, z: 1}
+    scaleOffset: {x: 10, y: 10, z: 10}
     tillingPeriod: 10
     tillingEnabled: 0
     dimensions: 3
-    octaves: 1
+    octaves: 3
     lacunarity: 2
     persistence: 0.5
     woodPatternMultiplier: 1
     turbulence: 0
-    noiseType: 0
+    noiseType: 2
   greenChannelNoiseSettings:
-    positionOffset: {x: 0, y: 0, z: 0}
+    positionOffset: {x: 0, y: 0.53, z: 0}
     rotationOffset: {x: 0, y: 0, z: 0}
-    scaleOffset: {x: 1, y: 1, z: 1}
+    scaleOffset: {x: 4.06, y: 4.54, z: 5.44}
     tillingPeriod: 10
     tillingEnabled: 0
     dimensions: 3
-    octaves: 1
-    lacunarity: 2
+    octaves: 6
+    lacunarity: 3.52
     persistence: 0.5
     woodPatternMultiplier: 1
     turbulence: 0
-    noiseType: 0
+    noiseType: 2
   blueChannelNoiseSettings:
-    positionOffset: {x: 17, y: 17, z: 17}
-    rotationOffset: {x: 0, y: 0, z: 0}
-    scaleOffset: {x: 34, y: 34, z: 34}
-    tillingPeriod: 34
-    tillingEnabled: 0
-    dimensions: 3
-    octaves: 1
-    lacunarity: 2
-    persistence: 0.5
-    woodPatternMultiplier: 1
-    turbulence: 0
-    noiseType: 0
-  alphaChannelNoiseSettings:
     positionOffset: {x: 5.5, y: 5.5, z: 5.5}
     rotationOffset: {x: 0, y: 0, z: 0}
     scaleOffset: {x: 11, y: 11, z: 11}
     tillingPeriod: 11
-    tillingEnabled: 1
+    tillingEnabled: 0
     dimensions: 3
     octaves: 1
-    lacunarity: 1
-    persistence: 0
+    lacunarity: 2
+    persistence: 0.5
+    woodPatternMultiplier: 1
+    turbulence: 0
+    noiseType: 2
+  alphaChannelNoiseSettings:
+    positionOffset: {x: 5, y: 5, z: 5}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    scaleOffset: {x: 10, y: 10, z: 10}
+    tillingPeriod: 10
+    tillingEnabled: 0
+    dimensions: 3
+    octaves: 1
+    lacunarity: 2.02
+    persistence: 0.508
     woodPatternMultiplier: 1
     turbulence: 0
     noiseType: 2

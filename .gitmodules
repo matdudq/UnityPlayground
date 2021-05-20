@@ -2,3 +2,6 @@
 	path = Assets/Plugins
 	url = https://github.com/matdudq/UnityUtilities
 	branch = master
+[submodule "Assets/DudeiNoise"]
+	path = Assets/DudeiNoise
+	url = https://github.com/matdudq/DudeiNoise

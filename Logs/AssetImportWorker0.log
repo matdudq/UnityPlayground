@@ -2475,3 +2475,161 @@ System memory in use after: 59.3 MB.
 Unloading 4 unused Assets to reduce memory usage. Loaded Objects now: 1733.
 Total: 1.818300 ms (FindLiveObjects: 0.187800 ms CreateObjectMapping: 0.030100 ms MarkObjects: 1.583800 ms  DeleteObjects: 0.015400 ms)
 
+========================================================================
+Received Import Request.
+  Time since last request: 243.940768 seconds.
+  path: Assets/DudeiNoise/Systems
+  artifactKey: Guid(9858f98044357664b9bad49d722cc61e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/DudeiNoise/Systems using Guid(9858f98044357664b9bad49d722cc61e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '514c7fb1b367a280081b9d256e94fbb1') in 0.008656 seconds
+  Import took 0.010848 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 1.058454 seconds.
+  path: Assets/DudeiNoise
+  artifactKey: Guid(2b8b16010d854fc4290745144fe97ff6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/DudeiNoise using Guid(2b8b16010d854fc4290745144fe97ff6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9bd1613b53a6d151bc140e8209f5597a') in 0.006887 seconds
+  Import took 0.008887 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 15.329665 seconds.
+  path: Assets/DudeiNoise/Systems/Editor
+  artifactKey: Guid(10b2b18939b8c52449893551233fe5f3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/DudeiNoise/Systems/Editor using Guid(10b2b18939b8c52449893551233fe5f3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '09b7e0f165d94aabddf968711d332e44') in 0.006651 seconds
+  Import took 0.008963 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000479 seconds.
+  path: Assets/DudeiNoise/Systems/Editor
+  artifactKey: Guid(10b2b18939b8c52449893551233fe5f3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/DudeiNoise/Systems/Editor using Guid(10b2b18939b8c52449893551233fe5f3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '09b7e0f165d94aabddf968711d332e44') in 0.001852 seconds
+  Import took 0.003460 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 9.826776 seconds.
+  path: Assets/DudeiNoise/Systems/Editor/Utilities
+  artifactKey: Guid(14e98dabfe035184a9a8273e9e925eda) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/DudeiNoise/Systems/Editor/Utilities using Guid(14e98dabfe035184a9a8273e9e925eda) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd03a82f1382ccab856a58d64d5c73b43') in 0.002166 seconds
+  Import took 0.004102 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 59.303328 seconds.
+  path: Assets/DudeiNoise/Systems/Editor/Utilities/FolderReference.cs
+  artifactKey: Guid(20a36cb77aeb36049b438e4c00a2525e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/DudeiNoise/Systems/Editor/Utilities/FolderReference.cs using Guid(20a36cb77aeb36049b438e4c00a2525e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd792ec0a9cf6af9981aded5bb7de45e2') in 0.001775 seconds
+  Import took 0.003766 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.002973 seconds.
+  path: Assets/DudeiNoise/Systems/Editor/Utilities/FolderReference.cs
+  artifactKey: Guid(20a36cb77aeb36049b438e4c00a2525e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/DudeiNoise/Systems/Editor/Utilities/FolderReference.cs using Guid(20a36cb77aeb36049b438e4c00a2525e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd792ec0a9cf6af9981aded5bb7de45e2') in 0.001681 seconds
+  Import took 0.003485 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 15.613232 seconds.
+  path: Assets/DudeiNoise/Systems/Editor/Utilities/FolderReferencePropertyDrawer.cs
+  artifactKey: Guid(38e649c223d70b34ab84282762cdcc9b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/DudeiNoise/Systems/Editor/Utilities/FolderReferencePropertyDrawer.cs using Guid(38e649c223d70b34ab84282762cdcc9b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '646fda2f9f9622a5e6ae7485716cb08c') in 0.001943 seconds
+  Import took 0.003912 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.003289 seconds.
+  path: Assets/DudeiNoise/Systems/Editor/Utilities/FolderReferencePropertyDrawer.cs
+  artifactKey: Guid(38e649c223d70b34ab84282762cdcc9b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/DudeiNoise/Systems/Editor/Utilities/FolderReferencePropertyDrawer.cs using Guid(38e649c223d70b34ab84282762cdcc9b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '646fda2f9f9622a5e6ae7485716cb08c') in 0.002001 seconds
+  Import took 0.003748 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 56.147545 seconds.
+  path: Assets/DudeiNoise/Systems/Editor/Utilities/EditorGameExtensions.cs
+  artifactKey: Guid(4108fdad8d30c71428e5a85e1fc2eb31) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/DudeiNoise/Systems/Editor/Utilities/EditorGameExtensions.cs using Guid(4108fdad8d30c71428e5a85e1fc2eb31) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '21a66eeb64d80ea28e693bee5b30f0e9') in 0.001797 seconds
+  Import took 0.003777 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.004268 seconds.
+  path: Assets/DudeiNoise/Systems/Editor/Utilities/EditorGameExtensions.cs
+  artifactKey: Guid(4108fdad8d30c71428e5a85e1fc2eb31) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/DudeiNoise/Systems/Editor/Utilities/EditorGameExtensions.cs using Guid(4108fdad8d30c71428e5a85e1fc2eb31) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '21a66eeb64d80ea28e693bee5b30f0e9') in 0.001750 seconds
+  Import took 0.003630 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 60.966054 seconds.
+  path: Assets/DudeiNoise/DudeiNoise.asmdef
+  artifactKey: Guid(61624ed80ba2d8843bee0ad08982ed8c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/DudeiNoise/DudeiNoise.asmdef using Guid(61624ed80ba2d8843bee0ad08982ed8c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3d4cb5be4a9e9e832f83f27ff496fde2') in 0.002255 seconds
+  Import took 0.004579 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.004104 seconds.
+  path: Assets/DudeiNoise/DudeiNoise.asmdef
+  artifactKey: Guid(61624ed80ba2d8843bee0ad08982ed8c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/DudeiNoise/DudeiNoise.asmdef using Guid(61624ed80ba2d8843bee0ad08982ed8c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3d4cb5be4a9e9e832f83f27ff496fde2') in 0.001810 seconds
+  Import took 0.004014 seconds .
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.000594 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 0.24 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in  0.847 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 0.23 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 1122 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 58.5 MB.
+System memory in use after: 58.6 MB.
+
+Unloading 24 unused Assets to reduce memory usage. Loaded Objects now: 1735.
+Total: 1.825100 ms (FindLiveObjects: 0.203400 ms CreateObjectMapping: 0.035700 ms MarkObjects: 1.559500 ms  DeleteObjects: 0.025400 ms)
+
+========================================================================
+Received Import Request.
+  Time since last request: 44.569572 seconds.
+  path: Assets/DudeiNoise/Systems/Editor/Utilities
+  artifactKey: Guid(14e98dabfe035184a9a8273e9e925eda) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/DudeiNoise/Systems/Editor/Utilities using Guid(14e98dabfe035184a9a8273e9e925eda) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '11ff46d139e143c551c24a88cd40aa96') in 0.004104 seconds
+  Import took 0.006122 seconds .
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.000566 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 0.24 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Invoked RoslynAnalysisRunner static constructor.
+RoslynAnalysisRunner will not be running.
+RoslynAnalysisRunner has terminated.
+Mono: successfully reloaded assembly
+- Completed reload, in  0.858 seconds
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 0.22 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 1122 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 58.6 MB.
+System memory in use after: 58.7 MB.
+
+Unloading 4 unused Assets to reduce memory usage. Loaded Objects now: 1737.
+Total: 1.690700 ms (FindLiveObjects: 0.185100 ms CreateObjectMapping: 0.031000 ms MarkObjects: 1.461200 ms  DeleteObjects: 0.012500 ms)
+
