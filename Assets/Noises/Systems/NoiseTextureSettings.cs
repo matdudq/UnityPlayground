@@ -1,7 +1,5 @@
-﻿using System;
+﻿using DudeiNoise.Editor.Utilities;
 using UnityEngine;
-using Utilities;
-using Utilities.Editor;
 
 namespace DudeiNoise
 {
@@ -15,9 +13,6 @@ namespace DudeiNoise
 
 		[Tooltip("Resolution of rendered texture.")]
 		public int resolution = 256;
-		
-		[Tooltip("Says how colors on texture are mapped. Shouldn't be constant color.")]
-		public Gradient colorGradient = new Gradient();
 		
 		[Tooltip("Filter mode of rendered texture. Good to see different ways of filtering to se how noise works.")]
 		public FilterMode filterMode = FilterMode.Point;
@@ -50,7 +45,7 @@ namespace DudeiNoise
 					return redChannelNoiseSettings;
 			}
 
-			GameConsole.LogError(this, $"Something goes wrong with defined channel {noiseTextureChannel}");
+			Debug.Log( $"Something goes wrong with defined channel {noiseTextureChannel}");
 			return null;
 		}
 

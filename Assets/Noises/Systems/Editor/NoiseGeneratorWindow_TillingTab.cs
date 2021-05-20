@@ -6,37 +6,11 @@ namespace DudeiNoise.Editor
 {
 	public partial class NoiseGeneratorWindow
 	{
-		private class TillingTab : INoiseGeneratorWindowTab
+		private class TillingTab : INoiseGeneratorModeTab
 		{
-			private GUIContent buttonContent = null;
-			
-			private GUIContent noiseTypeSectionHeaderGC = null;
-			private GUIContent customPatternsSectionHeaderGC = null;
-			private GUIContent frequencySectionHeaderGC = null;
-			private GUIContent octavesSectionHeaderGC = null;
-			
-			
-			private SerializedProperty positionOffsetSP = null;
-			private SerializedProperty scaleOffsetSP    = null;
-			
-			private SerializedProperty tillingPeriodSP  = null;
-			private SerializedProperty tillingEnabledSP = null;
-
-			private SerializedProperty dimensionsSP            = null;
-			private SerializedProperty octavesSP               = null;
-			private SerializedProperty lacunaritySP            = null;
-			private SerializedProperty persistenceSP           = null;
-			private SerializedProperty woodPatternMultiplierSP = null;
-		
-			private SerializedProperty turbulenceSP = null;
-		
-			private SerializedProperty noiseTypeSP = null;
-
 			private NoiseGeneratorWindow owner;
 			
 			private float frequencyValue = 0;
-		
-			private bool useAdvancedSpaceSettings = false;
 			
 			private bool isNoiseTypeSectionFolded = false;
 			private bool isFrequencySectionFolded = false;
@@ -46,53 +20,15 @@ namespace DudeiNoise.Editor
 			public TillingTab(NoiseGeneratorWindow owner)
 			{
 				this.owner = owner;
-				
-				buttonContent = new GUIContent("Tilling Mode");
-				
-				noiseTypeSectionHeaderGC = new GUIContent("Noise Type");
-				customPatternsSectionHeaderGC = new GUIContent("Custom patterns");
-				frequencySectionHeaderGC = new GUIContent("Frequency settings");
-				octavesSectionHeaderGC = new GUIContent("Octaves settings");
-				
-				UpdateActiveSerializedProperties();
+				frequencyValue = owner.scaleOffsetSP.vector3Value.x;
+			}
 			
-				frequencyValue = scaleOffsetSP.vector3Value.x;
-			}
-
-			private void UpdateActiveSerializedProperties()
-			{
-				positionOffsetSP = owner.CurrentNoiseSettingsSP.FindPropertyRelative("positionOffset");
-				scaleOffsetSP = owner.CurrentNoiseSettingsSP.FindPropertyRelative("scaleOffset");
-				tillingEnabledSP = owner.CurrentNoiseSettingsSP.FindPropertyRelative("tillingEnabled");
-				tillingPeriodSP = owner.CurrentNoiseSettingsSP.FindPropertyRelative("tillingPeriod");
-				dimensionsSP = owner.CurrentNoiseSettingsSP.FindPropertyRelative("dimensions");
-				octavesSP = owner.CurrentNoiseSettingsSP.FindPropertyRelative("octaves");
-				lacunaritySP = owner.CurrentNoiseSettingsSP.FindPropertyRelative("lacunarity");
-				persistenceSP = owner.CurrentNoiseSettingsSP.FindPropertyRelative("persistence");
-				woodPatternMultiplierSP = owner.CurrentNoiseSettingsSP.FindPropertyRelative("woodPatternMultiplier");
-				turbulenceSP = owner.CurrentNoiseSettingsSP.FindPropertyRelative("turbulence");
-				noiseTypeSP = owner.CurrentNoiseSettingsSP.FindPropertyRelative("noiseType");
-			}
-
 			public void OnTabEnter()
 			{
-				tillingEnabledSP.boolValue = true;
+				owner.tillingEnabledSP.boolValue = true;
 				owner.CurrentNoiseSettingsSP.serializedObject.ApplyModifiedProperties();
-
-				UpdateActiveSerializedProperties();
-				owner.RegenerateTextures();
 			}
-
-			public void OnTabExit()
-			{
-			}
-
-			public void OnChannelChange()
-			{
-				UpdateActiveSerializedProperties();
-				owner.RegenerateTextures();
-			}
-
+			
 			public void DrawInspector()
 			{
 				DrawNoiseTypeSection();
@@ -103,12 +39,12 @@ namespace DudeiNoise.Editor
 
 			public bool DrawButton()
 			{
-				return GUILayout.Button(buttonContent);
+				return GUILayout.Button(owner.tillingTabButtonGC);
 			}
 
 			private void DrawCustomPatternsSection()
 			{
-				isCustomPatternsSectionFolded = EditorGUILayout.BeginFoldoutHeaderGroup(isCustomPatternsSectionFolded, customPatternsSectionHeaderGC);
+				isCustomPatternsSectionFolded = EditorGUILayout.BeginFoldoutHeaderGroup(isCustomPatternsSectionFolded, owner.customPatternsSectionHeaderGC);
 
 				if (isCustomPatternsSectionFolded)
 				{
@@ -116,11 +52,11 @@ namespace DudeiNoise.Editor
 					GUILayout.Space(10);
 					
 					GUILayout.BeginHorizontal();
-					EditorGUILayout.PropertyField(woodPatternMultiplierSP);
+					EditorGUILayout.PropertyField(owner.woodPatternMultiplierSP);
 					GUILayout.EndHorizontal();
 					
 					GUILayout.BeginHorizontal();
-					EditorGUILayout.PropertyField(turbulenceSP);
+					EditorGUILayout.PropertyField(owner.turbulenceSP);
 					GUILayout.EndHorizontal();
 
 					GUILayout.Space(10);
@@ -132,7 +68,7 @@ namespace DudeiNoise.Editor
 
 			private void DrawNoiseTypeSection()
 			{
-				isNoiseTypeSectionFolded = EditorGUILayout.BeginFoldoutHeaderGroup(isNoiseTypeSectionFolded, noiseTypeSectionHeaderGC);
+				isNoiseTypeSectionFolded = EditorGUILayout.BeginFoldoutHeaderGroup(isNoiseTypeSectionFolded, owner.noiseTypeSectionHeaderGC);
 				
 				if (isNoiseTypeSectionFolded)
 				{
@@ -140,16 +76,16 @@ namespace DudeiNoise.Editor
 					GUILayout.Space(10);
 					
 					GUILayout.BeginHorizontal();
-					EditorGUILayout.PropertyField(dimensionsSP);
+					EditorGUILayout.PropertyField(owner.dimensionsSP);
 					GUILayout.EndHorizontal();
 
 					GUILayout.BeginHorizontal();
-					EditorGUILayout.PropertyField(noiseTypeSP);
+					EditorGUILayout.PropertyField(owner.noiseTypeSP);
 					GUILayout.EndHorizontal();
 
-					tillingPeriodSP.intValue = Mathf.RoundToInt(frequencyValue);
+					owner.tillingPeriodSP.intValue = Mathf.RoundToInt(frequencyValue);
 					float halfOfFrequency = frequencyValue * 0.5f;
-					positionOffsetSP.vector3Value = new Vector3(halfOfFrequency, halfOfFrequency, halfOfFrequency);
+					owner.positionOffsetSP.vector3Value = new Vector3(halfOfFrequency, halfOfFrequency, halfOfFrequency);
 					
 					GUILayout.Space(10);
 					GUILayout.EndVertical();
@@ -160,7 +96,7 @@ namespace DudeiNoise.Editor
 
 			private void DrawFrequencySection()
 			{
-				isFrequencySectionFolded = EditorGUILayout.BeginFoldoutHeaderGroup(isFrequencySectionFolded, frequencySectionHeaderGC);
+				isFrequencySectionFolded = EditorGUILayout.BeginFoldoutHeaderGroup(isFrequencySectionFolded, owner.frequencySectionHeaderGC);
 
 				if (isFrequencySectionFolded)
 				{
@@ -172,7 +108,7 @@ namespace DudeiNoise.Editor
 					GUILayout.EndHorizontal();
 
 					GUILayout.BeginHorizontal();
-					scaleOffsetSP.vector3Value = frequencyValue * Vector3.one;
+					owner.scaleOffsetSP.vector3Value = frequencyValue * Vector3.one;
 					GUILayout.EndHorizontal();
 
 					GUILayout.Space(10);
@@ -184,7 +120,7 @@ namespace DudeiNoise.Editor
 
 			private void DrawLayersSettingsSection()
 			{
-				isLayersSectionFolded = EditorGUILayout.BeginFoldoutHeaderGroup(isLayersSectionFolded, octavesSectionHeaderGC);
+				isLayersSectionFolded = EditorGUILayout.BeginFoldoutHeaderGroup(isLayersSectionFolded, owner.octavesSectionHeaderGC);
 				
 				if (isLayersSectionFolded)
 				{
@@ -192,15 +128,15 @@ namespace DudeiNoise.Editor
 					GUILayout.Space(10);
 					
 					GUILayout.BeginHorizontal();
-					EditorGUILayout.PropertyField(octavesSP);
+					EditorGUILayout.PropertyField(owner.octavesSP);
 					GUILayout.EndHorizontal();
 
 					GUILayout.BeginHorizontal();
-					EditorGUILayout.PropertyField(lacunaritySP);
+					EditorGUILayout.PropertyField(owner.lacunaritySP);
 					GUILayout.EndHorizontal();
 					
 					GUILayout.BeginHorizontal();
-					EditorGUILayout.PropertyField(persistenceSP);
+					EditorGUILayout.PropertyField(owner.persistenceSP);
 					GUILayout.EndHorizontal();
 
 					GUILayout.Space(10);

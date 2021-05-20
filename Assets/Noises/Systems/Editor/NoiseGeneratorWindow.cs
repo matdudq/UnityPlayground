@@ -1,10 +1,9 @@
 ﻿#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
+using DudeiNoise.Editor.Utilities;
 using UnityEditor;
 using UnityEngine;
-using Utilities;
-using Utilities.Editor;
 
 namespace DudeiNoise.Editor
 {
@@ -24,8 +23,8 @@ namespace DudeiNoise.Editor
 		private Color[] blueChanelTextureArray = null;
 		private Color[] alphaChanelTextureArray = null;
 		
-		private Dictionary<Type,INoiseGeneratorWindowTab> tabs = null;
-		private INoiseGeneratorWindowTab activeTab = null;
+		private Dictionary<Type,INoiseGeneratorModeTab> tabs = null;
+		private INoiseGeneratorModeTab activeTab = null;
 		
 		private NoiseTextureChannel activeNoiseTextureChannel = NoiseTextureChannel.ALPHA;
 		
@@ -33,17 +32,6 @@ namespace DudeiNoise.Editor
 		
 		#endregion Variables
 
-		#region Variables - SerializedProperties
-
-		private SerializedProperty redChanelSettingsProperty = null;
-		private SerializedProperty greenChanelSettingsProperty = null;
-		private SerializedProperty blueChanelSettingsProperty = null;
-		private SerializedProperty alphaChanelSettingsProperty = null;
-
-		
-		
-		#endregion Variables - SerializedProperties
-		
 		#region Properties
 
 		private NoiseSettings CurrentNoiseSettings
@@ -72,7 +60,7 @@ namespace DudeiNoise.Editor
 						return redChanelSettingsProperty;
 				}
 				
-				GameConsole.LogError(this, $"Something goes wrong with defined channel {activeNoiseTextureChannel}");
+				Debug.Log( $"Something goes wrong with defined channel {activeNoiseTextureChannel}");
 				return null;
 			}
 		}
@@ -129,7 +117,7 @@ namespace DudeiNoise.Editor
 
             if (newPreset == null)
             {
-                GameConsole.LogWarning(GetWindow<NoiseGeneratorWindow>() ,"Lightmapping Helper setup object have to be defined once inside a project. Creating deafult one ...");
+	            Debug.Log( "Light-mapping Helper setup object have to be defined once inside a project. Creating deafault one ...");
 
                 newPreset = CreateInstance<NoiseTextureSettings>();
                 AssetDatabase.CreateAsset(newPreset, "Assets/Lightmapping-Helper-Preset.asset");
@@ -148,28 +136,30 @@ namespace DudeiNoise.Editor
 			noiseTexture = new NoiseTexture(settings);
 			
 			textureSettingsEditor = (NoiseTextureSettingsEditor)UnityEditor.Editor.CreateEditor(settings);
-
+			
 			redChanelSettingsProperty = textureSettingsEditor.serializedObject.FindProperty("redChannelNoiseSettings");
 			greenChanelSettingsProperty  = textureSettingsEditor.serializedObject.FindProperty("greenChannelNoiseSettings");
 			blueChanelSettingsProperty  = textureSettingsEditor.serializedObject.FindProperty("blueChannelNoiseSettings");
 			alphaChanelSettingsProperty  = textureSettingsEditor.serializedObject.FindProperty("alphaChannelNoiseSettings");
 			
-			
 			textureWindow = TextureWindow.GetWindow(new Vector2(500,0),"Noise Texture", settings.resolution, settings.filterMode);
+			
 			redChanelTextureArray = new Color[NoiseSettings.maximalResolution*NoiseSettings.maximalResolution];
 			greenChanelTextureArray = new Color[NoiseSettings.maximalResolution*NoiseSettings.maximalResolution];
 			blueChanelTextureArray = new Color[NoiseSettings.maximalResolution*NoiseSettings.maximalResolution];
 			alphaChanelTextureArray = new Color[NoiseSettings.maximalResolution*NoiseSettings.maximalResolution];
 			
-			tabs = new Dictionary<Type, INoiseGeneratorWindowTab>()
+			InitielizeContents();
+			
+			ChangeChannel(NoiseTextureChannel.RED);
+			
+			tabs = new Dictionary<Type, INoiseGeneratorModeTab>()
 			{
 				{typeof(CustomSpaceTab), new CustomSpaceTab(this)},
 				{typeof(TillingTab), new TillingTab(this)}
 			};
 			
 			SwitchTab(typeof(CustomSpaceTab));
-			
-			RegenerateTextures();
 
 		}
 		
@@ -180,23 +170,24 @@ namespace DudeiNoise.Editor
 				return;
 			}
 			
-			activeTab?.OnTabExit();
-
 			activeTab = tabs[tab];
 
+			UpdateActiveNoiseSettingsSp();
+			RegenerateTextures();
+			
 			activeTab?.OnTabEnter();
 		}
 		
-		private void SwitchTab(INoiseGeneratorWindowTab tab)
+		private void SwitchTab(INoiseGeneratorModeTab tab)
 		{
 			if (activeTab == tab)
 			{
 				return;
 			}
 			
-			activeTab?.OnTabExit();
-
 			activeTab = tab;
+			
+			RegenerateTextures();
 
 			activeTab?.OnTabEnter();
 		}
@@ -234,12 +225,11 @@ namespace DudeiNoise.Editor
 
 			GUILayout.BeginHorizontal();
 			
-			foreach (INoiseGeneratorWindowTab tab in tabs.Values)
+			foreach (INoiseGeneratorModeTab tab in tabs.Values)
 			{
 				if (tab.DrawButton())
 				{
 					SwitchTab(tab);
-					RegenerateTextures();
 				}
 			}
 			
@@ -257,37 +247,29 @@ namespace DudeiNoise.Editor
 		{
 			GUILayout.BeginHorizontal();
 			
-			if (GUILayout.Button("Red channel"))
+			if (GUILayout.Button(redChannelButtonGC))
 			{
-				activeNoiseTextureChannel = NoiseTextureChannel.RED;
-				activeTab.OnChannelChange();
-				RegenerateTextures();
+				ChangeChannel(NoiseTextureChannel.RED);
 			}
 			
-			if (GUILayout.Button("Blue channel"))
+			if (GUILayout.Button(blueChannelButtonGC))
 			{
-				activeNoiseTextureChannel = NoiseTextureChannel.BLUE;	
-				activeTab.OnChannelChange();
-				RegenerateTextures();
+				ChangeChannel(NoiseTextureChannel.BLUE);
 			}
-			
-			if (GUILayout.Button("Green channel"))
+
+			if (GUILayout.Button(greenChannelButtonGC))
 			{
-				activeNoiseTextureChannel = NoiseTextureChannel.GREEN;
-				activeTab.OnChannelChange();
-				RegenerateTextures();
+				ChangeChannel(NoiseTextureChannel.GREEN);
 			}
-			
-			if (GUILayout.Button("Alpha channel"))
+
+			if (GUILayout.Button(alphaChannelButtonGC))
 			{
-				activeNoiseTextureChannel = NoiseTextureChannel.ALPHA;
-				activeTab.OnChannelChange();
-				RegenerateTextures();
+				ChangeChannel(NoiseTextureChannel.ALPHA);
 			}
 			
 			GUILayout.EndHorizontal();
 			
-			if (GUILayout.Button("Save Texture"))
+			if (GUILayout.Button(saveTextureButtonGC))
 			{
 				noiseTexture.SaveTexture();
 			}
@@ -343,7 +325,15 @@ namespace DudeiNoise.Editor
 					break;
 			}
 		}
+		
+		private void ChangeChannel(NoiseTextureChannel channel, bool regenerateTexture = true)
+		{
+			activeNoiseTextureChannel = channel;
 
+			UpdateActiveNoiseSettingsSp();
+			RegenerateTextures();
+		}
+		
 		#endregion Private methods
 	}
 }

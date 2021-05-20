@@ -6,10 +6,41 @@ namespace DudeiNoise.Editor
 {
 	public class TextureWindow : EditorWindow
 	{
+		#region Variables
+
 		private Texture2D texture = null;
 		
 		private static Vector2 windowSize = new Vector2(400, 400);
+
+		#endregion Variables
+
+		#region Unity methods
 		
+		private void OnGUI()
+		{
+			Rect displayArea = new Rect(0, 0, position.width, position.height);
+			
+			EditorGUILayout.BeginVertical();
+			GUILayout.BeginArea(displayArea);
+			GUILayout.FlexibleSpace();
+			GUILayout.BeginHorizontal();
+			GUILayout.FlexibleSpace();
+
+			DisplayTextureOfType(displayArea);
+			
+			GUILayout.FlexibleSpace();
+			GUILayout.EndHorizontal();
+			GUILayout.FlexibleSpace();
+			GUILayout.EndArea();
+			
+			
+			EditorGUILayout.EndVertical();
+		}
+
+		#endregion Unity methods
+		
+		#region Public methods
+
 		public static TextureWindow GetWindow(Vector2 position, string name, int resolution, FilterMode mode)
 		{
 			TextureWindow window = GetWindow<TextureWindow>(name);
@@ -44,32 +75,17 @@ namespace DudeiNoise.Editor
 			texture.SetPixels(textureArray);
 			texture.Apply();
 		}
-		
-		private void OnGUI()
-		{
-			Rect displayArea = new Rect(0, 0, position.width, position.height);
-			
-			EditorGUILayout.BeginVertical();
-			GUILayout.BeginArea(displayArea);
-			GUILayout.FlexibleSpace();
-			GUILayout.BeginHorizontal();
-			GUILayout.FlexibleSpace();
 
-			DisplayTextureOfType(displayArea);
-			
-			GUILayout.FlexibleSpace();
-			GUILayout.EndHorizontal();
-			GUILayout.FlexibleSpace();
-			GUILayout.EndArea();
-			
-			
-			EditorGUILayout.EndVertical();
-		}
+		#endregion Public methods
+		
+		#region Private methods
 
 		private void DisplayTextureOfType(Rect displayArea)
 		{
 			EditorGUI.DrawPreviewTexture(displayArea,texture);
 		}
+
+		#endregion Private methods
 	}
 }
 #endif

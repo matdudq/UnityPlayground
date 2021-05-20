@@ -1,9 +1,7 @@
 {
     "name": "Noises",
     "rootNamespace": "",
-    "references": [
-        "GUID:d4ecd221b1802064e908c269a222f15d"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

@@ -1,12 +1,13 @@
 ﻿using System.IO;
 using UnityEditor;
 using UnityEngine;
-using Utilities;
 
 namespace DudeiNoise
 {
 	public class NoiseTexture
 	{
+		#region Variables
+
 		private NoiseTextureSettings settings = null;
 
 		private Color[] textureValues = null;
@@ -14,7 +15,11 @@ namespace DudeiNoise
 		private float[] noiseBuffer = null;
 		
 		private Texture2D texture = null;
-		
+
+		#endregion Variables
+
+		#region Properties
+
 		public Texture2D Texture
 		{
 			get
@@ -22,6 +27,11 @@ namespace DudeiNoise
 				return texture;
 			}
 		}
+		
+
+		#endregion Properties
+		
+		#region Constructor
 		
 		public NoiseTexture(NoiseTextureSettings generatorSettings)
 		{
@@ -37,6 +47,10 @@ namespace DudeiNoise
 			
 			SaveTextureToChannel(NoiseTextureChannel.ALPHA);
 		}
+		
+		#endregion
+
+		#region Public methods
 
 		public float GetRedChanelProbe(float x, float y)
 		{
@@ -87,7 +101,7 @@ namespace DudeiNoise
 			}
 			else
 			{
-				GameConsole.LogError(this, "Cannot save texture! Export folder not set up.");
+				Debug.LogError("Cannot save texture! Export folder not set up.");
 			}
 		}
 		
@@ -156,14 +170,20 @@ namespace DudeiNoise
 			texture.SetPixels(textureValues);
 			texture.Apply();
 		}
+
+		#endregion Public methods
+
+		#region Private methods
 		
 		private string ConstructSavePath()
 		{
 			return settings.exportFolder.Path + $"/Red_{settings.alphaChannelNoiseSettings.noiseType}{settings.alphaChannelNoiseSettings.dimensions}D"
-											  + $"Green_{settings.alphaChannelNoiseSettings.noiseType}{settings.alphaChannelNoiseSettings.dimensions}D"
-											  + $"Blue_{settings.alphaChannelNoiseSettings.noiseType}{settings.alphaChannelNoiseSettings.dimensions}D"
-											  + $"Alpha_{settings.alphaChannelNoiseSettings.noiseType}{settings.alphaChannelNoiseSettings.dimensions}D"
-											  + $"_Noise_{settings.resolution}.png";
+			                                  + $"Green_{settings.alphaChannelNoiseSettings.noiseType}{settings.alphaChannelNoiseSettings.dimensions}D"
+			                                  + $"Blue_{settings.alphaChannelNoiseSettings.noiseType}{settings.alphaChannelNoiseSettings.dimensions}D"
+			                                  + $"Alpha_{settings.alphaChannelNoiseSettings.noiseType}{settings.alphaChannelNoiseSettings.dimensions}D"
+			                                  + $"_Noise_{settings.resolution}.png";
 		}
+
+		#endregion Private methods
 	}
 }

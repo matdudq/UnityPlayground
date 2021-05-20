@@ -1,19 +1,27 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+using UnityEditor;
 using UnityEngine;
 
 namespace DudeiNoise.Editor
 {
 	public partial class NoiseGeneratorWindow
 	{
-		private bool stylesInitialized = false;
-		
+		#region Variables
+
 		private GUIStyle sectionStyle;
-		
+
+		private bool stylesInitialized = false;
+
+		#endregion Variables
+
+		#region Private methods
+
 		private void InitializeStyles()
 		{
-			
 			sectionStyle = new GUIStyle(EditorStyles.helpBox);
 		}
-		
+
+		#endregion Private methods
 	}
 }
+#endif

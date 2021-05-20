@@ -40,38 +40,41 @@ namespace DudeiNoise.Editor
     				NoiseGeneratorWindow.Open(target as NoiseTextureSettings);
     			}
     		}
-
-			public void DrawCustomInspector()
-			{
-				if (headerStyle == null)
-				{
-					headerStyle = new GUIStyle(GUI.skin.label)
-					{
-						fontStyle = FontStyle.Bold
-					};
-				}
-				
-				serializedObject.Update();
-				
-				GUILayout.Label(textureDataHeaderGC,headerStyle);
-
-				EditorGUI.BeginChangeCheck();
-				
-				EditorGUILayout.PropertyField(exportFolderSP);
-				EditorGUILayout.PropertyField(resolutionSP);
-				EditorGUILayout.PropertyField(colorGradientSP);
-				EditorGUILayout.PropertyField(filterModeSP);
-				
-				EditorGUILayout.Space();
-				
-				if (EditorGUI.EndChangeCheck())
-				{
-					serializedObject.ApplyModifiedProperties();
-					EditorUtility.SetDirty(target);
-				}
-			}
 			
     		#endregion Unity methods
-    	}
+
+            #region Public methods
+
+            public void DrawCustomInspector()
+            {
+	            if (headerStyle == null)
+	            {
+		            headerStyle = new GUIStyle(GUI.skin.label)
+		            {
+			            fontStyle = FontStyle.Bold
+		            };
+	            }
+				
+	            serializedObject.Update();
+				
+	            GUILayout.Label(textureDataHeaderGC,headerStyle);
+
+	            EditorGUI.BeginChangeCheck();
+				
+	            EditorGUILayout.PropertyField(exportFolderSP);
+	            EditorGUILayout.PropertyField(resolutionSP);
+	            EditorGUILayout.PropertyField(filterModeSP);
+				
+	            EditorGUILayout.Space();
+				
+	            if (EditorGUI.EndChangeCheck())
+	            {
+		            serializedObject.ApplyModifiedProperties();
+		            EditorUtility.SetDirty(target);
+	            }
+            }
+
+            #endregion Public methods
+        }
 }		
 #endif

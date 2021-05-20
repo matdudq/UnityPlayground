@@ -6,6 +6,8 @@ namespace DudeiNoise
 	[Serializable]
 	public class NoiseSettings
 	{
+		#region Variables
+
 		[Tooltip("You can move though noise surface by that. Position offset in 'noise-space'.")]
 		public Vector3 positionOffset = Vector3.zero;
 		[Tooltip("You can rotate noise surface by that to get more interesting results. Rotation offset in 'noise-space'.")]
@@ -39,5 +41,6 @@ namespace DudeiNoise
 		
 		public static int maximalResolution = 256;
 
+		#endregion Variables
 	}
 }

@@ -7,6 +7,8 @@ namespace DudeiNoise.Editor
 	[CustomEditor(typeof(NoiseSettings))]
 	public class NoiseSettingsEditor : UnityEditor.Editor
 	{
+		#region Variables
+
 		private GUIStyle headerStyle = null;
 
 		private GUIContent noiseDataHeaderGC = null;
@@ -34,6 +36,10 @@ namespace DudeiNoise.Editor
 		private float frequencyValue = 0;
 		
 		private bool useAdvancedSpaceSettings = false;
+
+		#endregion Variables
+
+		#region Public methods
 
 		public void OnEnable()
 		{
@@ -77,8 +83,12 @@ namespace DudeiNoise.Editor
 			DrawCustomPatternsTab();
 			
 		}
+		
+		#endregion Public methods
 
-		public void DrawCustomPatternsTab()
+		#region Private methods
+
+		private void DrawCustomPatternsTab()
 		{
 			EditorGUI.BeginChangeCheck();
 
@@ -96,7 +106,7 @@ namespace DudeiNoise.Editor
 			}
 		}
 
-		public void DrawNoiseTypeTab()
+		private void DrawNoiseTypeTab()
 		{
 			GUILayout.Label(noiseDataHeaderGC,headerStyle);
             			
@@ -116,7 +126,7 @@ namespace DudeiNoise.Editor
 			EditorGUILayout.Space();
 		}
 
-		public void DrawSpaceSettings()
+		private void DrawSpaceSettings()
 		{
 			EditorGUILayout.PropertyField(dimensionsSP);
 			useAdvancedSpaceSettings = EditorGUILayout.Toggle(useAdvancedToggleGC, useAdvancedSpaceSettings);
@@ -153,7 +163,7 @@ namespace DudeiNoise.Editor
 			EditorGUILayout.Space();
 		}
 
-		public void DrawLayersSettings()
+		private void DrawLayersSettings()
 		{
 			EditorGUILayout.PropertyField(octavesSP);
 			EditorGUILayout.PropertyField(lacunaritySP);
@@ -161,6 +171,9 @@ namespace DudeiNoise.Editor
             
 			EditorGUILayout.Space();
 		}
+
+		#endregion Private methods
+		
 	}
 }
 #endif

@@ -72,10 +72,10 @@ MonoBehaviour:
     turbulence: 0
     noiseType: 0
   blueChannelNoiseSettings:
-    positionOffset: {x: 0, y: 0, z: 0}
+    positionOffset: {x: 17, y: 17, z: 17}
     rotationOffset: {x: 0, y: 0, z: 0}
-    scaleOffset: {x: 1, y: 1, z: 1}
-    tillingPeriod: 10
+    scaleOffset: {x: 34, y: 34, z: 34}
+    tillingPeriod: 34
     tillingEnabled: 0
     dimensions: 3
     octaves: 1
@@ -85,12 +85,12 @@ MonoBehaviour:
     turbulence: 0
     noiseType: 0
   alphaChannelNoiseSettings:
-    positionOffset: {x: 0.5, y: 0.5, z: 0.5}
+    positionOffset: {x: 5.5, y: 5.5, z: 5.5}
     rotationOffset: {x: 0, y: 0, z: 0}
-    scaleOffset: {x: 10.63, y: 4.63, z: 1}
-    tillingPeriod: 1
-    tillingEnabled: 0
-    dimensions: 2
+    scaleOffset: {x: 11, y: 11, z: 11}
+    tillingPeriod: 11
+    tillingEnabled: 1
+    dimensions: 3
     octaves: 1
     lacunarity: 1
     persistence: 0

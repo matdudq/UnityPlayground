@@ -3,13 +3,9 @@ namespace DudeiNoise.Editor
 {
 	public partial class NoiseGeneratorWindow 
 	{
-		private interface INoiseGeneratorWindowTab
+		private interface INoiseGeneratorModeTab
 		{
 			void OnTabEnter();
-
-			void OnTabExit();
-
-			void OnChannelChange();
 			
 			void DrawInspector();
 
