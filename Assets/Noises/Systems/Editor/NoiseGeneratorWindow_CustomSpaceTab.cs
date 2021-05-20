@@ -1,7 +1,8 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+using UnityEditor;
 using UnityEngine;
 
-namespace DudeiNoise
+namespace DudeiNoise.Editor
 {
 	public partial class NoiseGeneratorWindow
 	{
@@ -11,7 +12,7 @@ namespace DudeiNoise
 			private GUIContent noiseDataHeaderGC = null;
 			
 			private GUIContent customPatternsHeaderGC = null;
-		
+			
 			private SerializedProperty positionOffsetSP = null;
 			private SerializedProperty rotationOffsetSP = null;
 			private SerializedProperty scaleOffsetSP    = null;
@@ -31,10 +32,13 @@ namespace DudeiNoise
 			private NoiseGeneratorWindow owner;
 
 			private GUIStyle headerStyle = null;
-			
-			private float frequencyValue = 0;
-		
+
 			private bool useAdvancedSpaceSettings = false;
+
+			private bool isNoiseTypeSectionFolded = false;
+			private bool isSpaceSectionFolded = false;
+			private bool isLayersSectionFolded = false;
+			private bool isCustomPatternsSectionFolded = false;
 			
 			public CustomSpaceTab(NoiseGeneratorWindow owner)
 			{
@@ -44,9 +48,7 @@ namespace DudeiNoise
 				noiseDataHeaderGC = new GUIContent("Noise settings");
 				customPatternsHeaderGC = new GUIContent("Custom patterns");
 
-				GetActiveSerializedProperties();
-			
-				frequencyValue = scaleOffsetSP.vector3Value.x;
+				UpdateActiveSerializedProperties();
 			}
 
 			public void OnTabEnter()
@@ -54,11 +56,18 @@ namespace DudeiNoise
 				tillingEnabledSP.boolValue = false;
 				owner.CurrentNoiseSettingsSP.serializedObject.ApplyModifiedProperties();
 
-				GetActiveSerializedProperties();
+				UpdateActiveSerializedProperties();
+				owner.RegenerateTextures();
 			}
 
 			public void OnTabExit()
 			{
+			}
+
+			public void OnChannelChange()
+			{
+				UpdateActiveSerializedProperties();
+				owner.RegenerateTextures();
 			}
 
 			public void DrawInspector()
@@ -70,20 +79,11 @@ namespace DudeiNoise
 						fontStyle = FontStyle.Bold
 					};
 				}
-			
-				EditorGUI.BeginChangeCheck();
 				
 				DrawNoiseTypeTab();
 				DrawSpaceSettings();
 				DrawLayersSettings();
 				DrawCustomPatternsTab();
-				
-				if (EditorGUI.EndChangeCheck())
-				{
-					owner.RegenerateTextures();
-					positionOffsetSP.serializedObject.ApplyModifiedProperties();	
-					EditorUtility.SetDirty(owner.settings);
-				}
 			}
 
 			public bool DrawButton()
@@ -91,7 +91,7 @@ namespace DudeiNoise
 				return GUILayout.Button(buttonContent);
 			}
 
-			private void GetActiveSerializedProperties()
+			private void UpdateActiveSerializedProperties()
 			{
 				positionOffsetSP = owner.CurrentNoiseSettingsSP.FindPropertyRelative("positionOffset");
 				rotationOffsetSP = owner.CurrentNoiseSettingsSP.FindPropertyRelative("rotationOffset");
@@ -108,8 +108,6 @@ namespace DudeiNoise
 			
 			private void DrawCustomPatternsTab()
 			{
-				EditorGUI.BeginChangeCheck();
-
 				GUILayout.Label(customPatternsHeaderGC,headerStyle);
 	            
 				EditorGUILayout.Space();
@@ -121,9 +119,7 @@ namespace DudeiNoise
 			private void DrawNoiseTypeTab()
 			{
 				GUILayout.Label(noiseDataHeaderGC,headerStyle);
-            				
-				EditorGUILayout.Space();
-	            
+				
 				EditorGUILayout.PropertyField(noiseTypeSP);
 				EditorGUILayout.PropertyField(dimensionsSP);
 
@@ -135,8 +131,6 @@ namespace DudeiNoise
 				EditorGUILayout.PropertyField(positionOffsetSP);
 				EditorGUILayout.PropertyField(rotationOffsetSP);
 				EditorGUILayout.PropertyField(scaleOffsetSP);
-				
-				frequencyValue = scaleOffsetSP.vector3Value.x;
 
 				EditorGUILayout.Space();
 			}
@@ -152,3 +146,4 @@ namespace DudeiNoise
 		}
 	}
 }
+#endif

@@ -34,23 +34,23 @@ namespace DudeiNoise
 
 		#region Public methods
 
-		public NoiseSettings GetNoiseSettingsForChannel(Channel channel)
+		public NoiseSettings GetNoiseSettingsForChannel(NoiseTextureChannel noiseTextureChannel)
 		{
-			switch (channel)
+			switch (noiseTextureChannel)
 			{
-				case Channel.RED:
+				case NoiseTextureChannel.RED:
 					return redChannelNoiseSettings;
-				case Channel.GREEN:
+				case NoiseTextureChannel.GREEN:
 					return greenChannelNoiseSettings;
-				case Channel.BLUE:
+				case NoiseTextureChannel.BLUE:
 					return blueChannelNoiseSettings;
-				case Channel.ALPHA:
+				case NoiseTextureChannel.ALPHA:
 					return alphaChannelNoiseSettings;
-				case Channel.FULL:
+				case NoiseTextureChannel.FULL:
 					return redChannelNoiseSettings;
 			}
 
-			GameConsole.LogError(this, $"Something goes wrong with defined channel {channel}");
+			GameConsole.LogError(this, $"Something goes wrong with defined channel {noiseTextureChannel}");
 			return null;
 		}
 

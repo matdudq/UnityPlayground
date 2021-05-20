@@ -2,10 +2,10 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace DudeiNoise
+namespace DudeiNoise.Editor
 {
 		[CustomEditor(typeof(NoiseTextureSettings))]
-    	public class NoiseTextureSettingsEditor : Editor
+    	public class NoiseTextureSettingsEditor : UnityEditor.Editor
     	{
 			#region Variables
 
@@ -75,5 +75,5 @@ namespace DudeiNoise
 			
     		#endregion Unity methods
     	}
-		#endif
-}
+}		
+#endif

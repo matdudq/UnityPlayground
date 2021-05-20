@@ -1,4 +1,5 @@
-﻿namespace DudeiNoise
+﻿#if UNITY_EDITOR
+namespace DudeiNoise.Editor
 {
 	public partial class NoiseGeneratorWindow 
 	{
@@ -8,9 +9,12 @@
 
 			void OnTabExit();
 
+			void OnChannelChange();
+			
 			void DrawInspector();
 
 			bool DrawButton();
 		}
 	}
 }
+#endif

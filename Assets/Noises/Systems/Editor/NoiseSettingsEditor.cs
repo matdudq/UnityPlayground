@@ -1,10 +1,11 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+using UnityEditor;
 using UnityEngine;
 
-namespace DudeiNoise
+namespace DudeiNoise.Editor
 {
 	[CustomEditor(typeof(NoiseSettings))]
-	public class NoiseSettingsEditor : Editor
+	public class NoiseSettingsEditor : UnityEditor.Editor
 	{
 		private GUIStyle headerStyle = null;
 
@@ -162,3 +163,4 @@ namespace DudeiNoise
 		}
 	}
 }
+#endif

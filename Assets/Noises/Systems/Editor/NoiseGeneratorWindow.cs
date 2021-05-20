@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using Utilities.Editor;
 using Utilities;
+using Utilities.Editor;
 
-namespace DudeiNoise
+namespace DudeiNoise.Editor
 {
 	public partial class NoiseGeneratorWindow : EditorWindow
 	{
@@ -32,7 +32,9 @@ namespace DudeiNoise
 		private Dictionary<Type,INoiseGeneratorWindowTab> tabs = null;
 		private INoiseGeneratorWindowTab activeTab = null;
 		
-		private Channel activeChannel = Channel.ALPHA;
+		private NoiseTextureChannel activeNoiseTextureChannel = NoiseTextureChannel.ALPHA;
+		
+		private Vector2 scrollPos = Vector2.zero;
 		
 		#endregion Variables
 
@@ -42,7 +44,7 @@ namespace DudeiNoise
 		{
 			get
 			{
-				return settings.GetNoiseSettingsForChannel(activeChannel);
+				return settings.GetNoiseSettingsForChannel(activeNoiseTextureChannel);
 			}
 		}
 
@@ -50,21 +52,21 @@ namespace DudeiNoise
 		{
 			get
 			{
-				switch (activeChannel)
+				switch (activeNoiseTextureChannel)
 				{
-					case Channel.RED:
+					case NoiseTextureChannel.RED:
 						return redChanelSettingsProperty;
-					case Channel.GREEN:
+					case NoiseTextureChannel.GREEN:
 						return greenChanelSettingsProperty;
-					case Channel.BLUE:
+					case NoiseTextureChannel.BLUE:
 						return blueChanelSettingsProperty;
-					case Channel.ALPHA:
+					case NoiseTextureChannel.ALPHA:
 						return alphaChanelSettingsProperty;
-					case Channel.FULL:
+					case NoiseTextureChannel.FULL:
 						return redChanelSettingsProperty;
 				}
 				
-				GameConsole.LogError(this, $"Something goes wrong with defined channel {activeChannel}");
+				GameConsole.LogError(this, $"Something goes wrong with defined channel {activeNoiseTextureChannel}");
 				return null;
 			}
 		}
@@ -75,6 +77,12 @@ namespace DudeiNoise
 
 		private void OnGUI()
 		{
+			if(!stylesInitialized)
+			{
+				InitializeStyles();
+				stylesInitialized = true;
+			}
+			
 			DrawEditorWindow();
 		}
 
@@ -134,7 +142,7 @@ namespace DudeiNoise
 			this.settings = settings;
 			noiseTexture = new NoiseTexture(settings);
 			
-			textureSettingsEditor = (NoiseTextureSettingsEditor)Editor.CreateEditor(settings);
+			textureSettingsEditor = (NoiseTextureSettingsEditor)UnityEditor.Editor.CreateEditor(settings);
 
 			redChanelSettingsProperty = textureSettingsEditor.serializedObject.FindProperty("redChannelNoiseSettings");
 			greenChanelSettingsProperty  = textureSettingsEditor.serializedObject.FindProperty("greenChannelNoiseSettings");
@@ -190,6 +198,11 @@ namespace DudeiNoise
 		
 		private void DrawEditorWindow()
 		{
+			EditorGUI.BeginChangeCheck();
+			
+			scrollPos = GUILayout.BeginScrollView(scrollPos, GUILayout.ExpandHeight(true));
+			EditorGUILayout.BeginVertical();
+			
 			textureSettingsEditor.DrawCustomInspector();
 			
 			DrawWindowTabs();
@@ -198,20 +211,25 @@ namespace DudeiNoise
 			{
 				textureSettingsEditor.serializedObject.ApplyModifiedProperties();	
 				EditorUtility.SetDirty(settings);
+				RegenerateTextures();
 			}
 
 			DrawSaveAndChannelsButtons();
+			
+			EditorGUILayout.EndVertical();
+			EditorGUILayout.EndScrollView();
 		}
 
 		private void DrawWindowTabs()
 		{
 			GUILayout.BeginHorizontal();
-
+			
 			foreach (INoiseGeneratorWindowTab tab in tabs.Values)
 			{
 				if (tab.DrawButton())
 				{
 					SwitchTab(tab);
+					RegenerateTextures();
 				}
 			}
 			
@@ -228,27 +246,30 @@ namespace DudeiNoise
 			
 			if (GUILayout.Button("Red channel"))
 			{
-				activeChannel = Channel.RED;
+				activeNoiseTextureChannel = NoiseTextureChannel.RED;
+				activeTab.OnChannelChange();
+				RegenerateTextures();
 			}
 			
 			if (GUILayout.Button("Blue channel"))
 			{
-				activeChannel = Channel.BLUE;
+				activeNoiseTextureChannel = NoiseTextureChannel.BLUE;	
+				activeTab.OnChannelChange();
+				RegenerateTextures();
 			}
 			
 			if (GUILayout.Button("Green channel"))
 			{
-				activeChannel = Channel.GREEN;
+				activeNoiseTextureChannel = NoiseTextureChannel.GREEN;
+				activeTab.OnChannelChange();
+				RegenerateTextures();
 			}
 			
 			if (GUILayout.Button("Alpha channel"))
 			{
-				activeChannel = Channel.ALPHA;
-			}
-			
-			if (GUILayout.Button("Full channel"))
-			{
-				activeChannel = Channel.FULL;
+				activeNoiseTextureChannel = NoiseTextureChannel.ALPHA;
+				activeTab.OnChannelChange();
+				RegenerateTextures();
 			}
 			
 			GUILayout.EndHorizontal();
@@ -261,7 +282,7 @@ namespace DudeiNoise
 		
 		private void RegenerateTextures()
 		{
-			noiseTexture.SaveTextureToChannel(activeChannel);
+			noiseTexture.SaveTextureToChannel(activeNoiseTextureChannel);
 			
 			RegenerateCachedChanelTextures();
 				
@@ -290,21 +311,21 @@ namespace DudeiNoise
 				}
 			}
 
-			switch (activeChannel)
+			switch (activeNoiseTextureChannel)
 			{
-				case Channel.RED:
+				case NoiseTextureChannel.RED:
 					textureWindow.UpdateTexture(redChanelTextureArray, settings.resolution, settings.filterMode);
 					break;
-				case Channel.GREEN:
+				case NoiseTextureChannel.GREEN:
 					textureWindow.UpdateTexture(greenChanelTextureArray, settings.resolution, settings.filterMode);
 					break;
-				case Channel.BLUE:
+				case NoiseTextureChannel.BLUE:
 					textureWindow.UpdateTexture(blueChanelTextureArray, settings.resolution, settings.filterMode);
 					break;
-				case Channel.ALPHA:
+				case NoiseTextureChannel.ALPHA:
 					textureWindow.UpdateTexture(alphaChanelTextureArray, settings.resolution, settings.filterMode);
 					break;
-				case Channel.FULL:
+				case NoiseTextureChannel.FULL:
 					textureWindow.UpdateTexture(originalTextureArray, settings.resolution, settings.filterMode);
 					break;
 			}

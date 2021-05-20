@@ -1,11 +1,8 @@
-﻿using System;
-using System.IO;
+﻿#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Assertions.Must;
-using Utilities;
 
-namespace DudeiNoise
+namespace DudeiNoise.Editor
 {
 	public class TextureWindow : EditorWindow
 	{
@@ -22,7 +19,7 @@ namespace DudeiNoise
 			window.maxSize = windowSize;
 			window.texture = new Texture2D(resolution, resolution, TextureFormat.RGBA32, false)
 			{
-				name = "Noise_alpha",
+				name = "Noise",
 				filterMode = mode,
 				wrapMode = TextureWrapMode.Clamp
 			};
@@ -75,3 +72,4 @@ namespace DudeiNoise
 		}
 	}
 }
+#endif

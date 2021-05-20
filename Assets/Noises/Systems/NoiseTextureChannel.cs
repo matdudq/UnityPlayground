@@ -1,6 +1,6 @@
 ﻿namespace DudeiNoise
 {
-	public enum Channel
+	public enum NoiseTextureChannel
 	{
 		RED,
 		GREEN,

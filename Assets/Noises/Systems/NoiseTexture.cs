@@ -35,7 +35,7 @@ namespace DudeiNoise
 				wrapMode = TextureWrapMode.Clamp
 			};
 			
-			SaveTextureToChannel(Channel.ALPHA);
+			SaveTextureToChannel(NoiseTextureChannel.ALPHA);
 		}
 
 		public float GetRedChanelProbe(float x, float y)
@@ -91,7 +91,7 @@ namespace DudeiNoise
 			}
 		}
 		
-		public void SaveTextureToChannel(Channel channel)
+		public void SaveTextureToChannel(NoiseTextureChannel noiseTextureChannel)
 		{
 			if (texture.width != settings.resolution)
 			{
@@ -103,21 +103,21 @@ namespace DudeiNoise
 				texture.filterMode = settings.filterMode;
 			}
 			
-			switch (channel)
+			switch (noiseTextureChannel)
 			{
-				case Channel.RED:
+				case NoiseTextureChannel.RED:
 					Noise.GenerateNoiseTexture(ref noiseBuffer,settings.redChannelNoiseSettings, settings.resolution);
 					break;
-				case Channel.GREEN:
+				case NoiseTextureChannel.GREEN:
 					Noise.GenerateNoiseTexture(ref noiseBuffer,settings.greenChannelNoiseSettings,settings.resolution);
 					break;
-				case Channel.BLUE:
+				case NoiseTextureChannel.BLUE:
 					Noise.GenerateNoiseTexture(ref noiseBuffer,settings.blueChannelNoiseSettings,settings.resolution);
 					break;
-				case Channel.ALPHA:
+				case NoiseTextureChannel.ALPHA:
 					Noise.GenerateNoiseTexture(ref noiseBuffer,settings.alphaChannelNoiseSettings,settings.resolution);
 					break;
-				case Channel.FULL:
+				case NoiseTextureChannel.FULL:
 					Noise.GenerateNoiseTexture(ref noiseBuffer,settings.redChannelNoiseSettings, settings.resolution);
 					Noise.GenerateNoiseTexture(ref noiseBuffer,settings.greenChannelNoiseSettings,settings.resolution);
 					Noise.GenerateNoiseTexture(ref noiseBuffer,settings.blueChannelNoiseSettings,settings.resolution);
@@ -129,21 +129,21 @@ namespace DudeiNoise
 			{
 				for (int x = 0; x < settings.resolution; x++)
 				{
-					switch (channel)
+					switch (noiseTextureChannel)
 					{
-						case Channel.RED:
+						case NoiseTextureChannel.RED:
 							textureValues[y * settings.resolution + x].r = noiseBuffer[y * settings.resolution + x];
 							break;
-						case Channel.GREEN:
+						case NoiseTextureChannel.GREEN:
 							textureValues[y * settings.resolution + x].g = noiseBuffer[y * settings.resolution + x];
 							break;
-						case Channel.BLUE:
+						case NoiseTextureChannel.BLUE:
 							textureValues[y * settings.resolution + x].b = noiseBuffer[y * settings.resolution + x];
 							break;
-						case Channel.ALPHA:
+						case NoiseTextureChannel.ALPHA:
 							textureValues[y * settings.resolution + x].a = noiseBuffer[y * settings.resolution + x];
 							break;
-						case Channel.FULL:
+						case NoiseTextureChannel.FULL:
 							textureValues[y * settings.resolution + x].r = noiseBuffer[y * settings.resolution + x];
 							textureValues[y * settings.resolution + x].g = noiseBuffer[y * settings.resolution + x];
 							textureValues[y * settings.resolution + x].b = noiseBuffer[y * settings.resolution + x];
