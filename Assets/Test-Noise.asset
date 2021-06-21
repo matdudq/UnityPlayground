@@ -10,31 +10,31 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 70c48d8930fe34444acc97b8ea56d355, type: 3}
-  m_Name: Lightmapping-Helper-Preset
+  m_Name: Test-Noise
   m_EditorClassIdentifier: 
   exportFolder:
     guid: 
-  resolution: 256
-  filterMode: 0
+  resolution: 100
+  filterMode: 2
   redChannelNoiseSettings:
-    positionOffset: {x: 0.5, y: 0.5, z: 0.5}
+    positionOffset: {x: 5, y: 5, z: 5}
     rotationOffset: {x: 0, y: 0, z: 0}
-    scaleOffset: {x: 1, y: 1, z: 1}
-    tillingPeriod: 1
-    tillingEnabled: 1
-    dimensions: 2
+    scaleOffset: {x: 10, y: 10, z: 10}
+    tillingPeriod: 10
+    tillingEnabled: 0
+    dimensions: 3
     octaves: 3
-    lacunarity: 2.55
-    persistence: 0.881
+    lacunarity: 2.61
+    persistence: 0.428
     woodPatternMultiplier: 1
-    turbulence: 1
+    turbulence: 0
     noiseType: 2
   greenChannelNoiseSettings:
     positionOffset: {x: 0, y: 0, z: 0}
     rotationOffset: {x: 0, y: 0, z: 0}
     scaleOffset: {x: 1, y: 1, z: 1}
     tillingPeriod: 10
-    tillingEnabled: 0
+    tillingEnabled: 1
     dimensions: 3
     octaves: 1
     lacunarity: 2

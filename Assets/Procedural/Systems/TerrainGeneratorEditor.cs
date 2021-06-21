@@ -10,14 +10,26 @@ namespace Procedural
         {
             private GUIContent buttonTitleGC = null;
 
+            private SerializedProperty targetDefinitionSP = null;
+
+            private Editor targetDefinitionEditor = null;
+            
             private void OnEnable()
             {
                 buttonTitleGC = new GUIContent("Regenerate");
+
+                targetDefinitionSP = serializedObject.FindProperty("tempDefinition");
+                targetDefinitionEditor = CreateEditor((target as TerrainGenerator)?.tempDefinition);
             }
 
             public override void OnInspectorGUI()
             {
                 TerrainGenerator generator = (TerrainGenerator)target;
+
+                if (targetDefinitionSP.objectReferenceValue != null)
+                {
+                    targetDefinitionEditor.DrawDefaultInspector();
+                }
                 
                 DrawDefaultInspector();
 

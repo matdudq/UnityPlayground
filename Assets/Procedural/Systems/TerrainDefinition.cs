@@ -1,11 +1,10 @@
-﻿using System;
-using DudeiNoise;
+﻿using DudeiNoise;
 using UnityEngine;
 
 namespace Procedural
 {
-    [Serializable]
-    public class TerrainDefinition
+    [CreateAssetMenu(fileName = nameof(TerrainDefinition), menuName = "Procedural/" + nameof(TerrainDefinition), order = 1)]
+    public class TerrainDefinition : ScriptableObject
     {
         [SerializeField] 
         private TerrainLayer[] terrainLayers = null;
@@ -17,10 +16,19 @@ namespace Procedural
         private NoiseTextureChannel activeChanel = NoiseTextureChannel.RED;
 
         [SerializeField]
+        private int chunkResolution = 100;
+        
+        [SerializeField]
         private float chunkSize = 10.0f;
 
         [SerializeField] 
         private float heightRange = 10.0f;
+
+        [SerializeField] 
+        private AnimationCurve heightCurve = null;
+        
+        [SerializeField]
+        private Vector3 terrainOffset = Vector3.zero;
         
         public TerrainLayer[] TerrainLayers
         {
@@ -55,5 +63,11 @@ namespace Procedural
         }
 
         public float HeightRange => heightRange;
+
+        public Vector3 TerrainOffset => terrainOffset;
+
+        public int ChunkResolution => chunkResolution;
+
+        public AnimationCurve HeightCurve => heightCurve;
     }
 }

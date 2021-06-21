@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f673c7e9f4a4b8b85c7af1cf29769ae, type: 3}
+  m_Name: Test Terrain
+  m_EditorClassIdentifier: 
+  terrainLayers:
+  - height: 0.3
+    terrainColor: {r: 0.29411766, g: 0.47058827, b: 0.8117648, a: 1}
+  - height: 0.45
+    terrainColor: {r: 0.9725491, g: 0.9294118, b: 0.34117648, a: 1}
+  - height: 0.6
+    terrainColor: {r: 0.18431373, g: 0.49411768, b: 0.12941177, a: 1}
+  - height: 0.75
+    terrainColor: {r: 0.18431373, g: 0.29803923, b: 0.04705883, a: 1}
+  - height: 0.9
+    terrainColor: {r: 0.29411766, g: 0.25490198, b: 0.19215688, a: 1}
+  - height: 1
+    terrainColor: {r: 1, g: 1, b: 1, a: 0}
+  - height: 0
+    terrainColor: {r: 0, g: 0, b: 0, a: 0}
+  textureSettings: {fileID: 11400000, guid: a252cc28c88dcb0409ddbf0244022e53, type: 2}
+  activeChanel: 0
+  chunkResolution: 100
+  chunkSize: 10
+  heightRange: 10
+  heightCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  terrainOffset: {x: 0, y: 0, z: 0}
