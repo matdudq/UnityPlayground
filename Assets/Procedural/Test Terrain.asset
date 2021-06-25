@@ -13,25 +13,23 @@ MonoBehaviour:
   m_Name: Test Terrain
   m_EditorClassIdentifier: 
   terrainLayers:
-  - height: 0.3
+  - height: 0.35
     terrainColor: {r: 0.29411766, g: 0.47058827, b: 0.8117648, a: 1}
-  - height: 0.45
+  - height: 0.4
     terrainColor: {r: 0.9725491, g: 0.9294118, b: 0.34117648, a: 1}
-  - height: 0.6
+  - height: 0.5
     terrainColor: {r: 0.18431373, g: 0.49411768, b: 0.12941177, a: 1}
-  - height: 0.75
+  - height: 0.55
     terrainColor: {r: 0.18431373, g: 0.29803923, b: 0.04705883, a: 1}
-  - height: 0.9
+  - height: 0.8
     terrainColor: {r: 0.29411766, g: 0.25490198, b: 0.19215688, a: 1}
   - height: 1
     terrainColor: {r: 1, g: 1, b: 1, a: 0}
-  - height: 0
-    terrainColor: {r: 0, g: 0, b: 0, a: 0}
   textureSettings: {fileID: 11400000, guid: a252cc28c88dcb0409ddbf0244022e53, type: 2}
   activeChanel: 0
-  chunkResolution: 100
-  chunkSize: 10
-  heightRange: 10
+  levelOfDetails: 6
+  chunkSize: 1
+  heightRange: 15
   heightCurve:
     serializedVersion: 2
     m_Curve:
@@ -44,6 +42,15 @@ MonoBehaviour:
       weightedMode: 0
       inWeight: 0
       outWeight: 0
+    - serializedVersion: 3
+      time: 0.4
+      value: 0
+      inSlope: -0.025187327
+      outSlope: -0.025187327
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.123224884
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 1

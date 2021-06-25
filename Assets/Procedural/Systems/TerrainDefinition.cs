@@ -6,6 +6,8 @@ namespace Procedural
     [CreateAssetMenu(fileName = nameof(TerrainDefinition), menuName = "Procedural/" + nameof(TerrainDefinition), order = 1)]
     public class TerrainDefinition : ScriptableObject
     {
+        public const int MAP_CHUNK_SIZE = 241;
+        
         [SerializeField] 
         private TerrainLayer[] terrainLayers = null;
 
@@ -15,8 +17,8 @@ namespace Procedural
         [SerializeField] 
         private NoiseTextureChannel activeChanel = NoiseTextureChannel.RED;
 
-        [SerializeField]
-        private int chunkResolution = 100;
+        [SerializeField, Range(0,6)] 
+        private int levelOfDetails = 1;
         
         [SerializeField]
         private float chunkSize = 10.0f;
@@ -29,6 +31,7 @@ namespace Procedural
         
         [SerializeField]
         private Vector3 terrainOffset = Vector3.zero;
+
         
         public TerrainLayer[] TerrainLayers
         {
@@ -65,9 +68,9 @@ namespace Procedural
         public float HeightRange => heightRange;
 
         public Vector3 TerrainOffset => terrainOffset;
-
-        public int ChunkResolution => chunkResolution;
-
+        
         public AnimationCurve HeightCurve => heightCurve;
+
+        public int LevelOfDetails => levelOfDetails;
     }
 }

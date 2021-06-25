@@ -17,11 +17,11 @@ MonoBehaviour:
   resolution: 100
   filterMode: 2
   redChannelNoiseSettings:
-    positionOffset: {x: 5, y: 5, z: 5}
+    positionOffset: {x: 9, y: 9, z: 9}
     rotationOffset: {x: 45, y: 45, z: 45}
-    scaleOffset: {x: 18.6, y: 10, z: 10}
-    tillingPeriod: 10
-    tillingEnabled: 0
+    scaleOffset: {x: 18, y: 18, z: 18}
+    tillingPeriod: 18
+    tillingEnabled: 1
     dimensions: 3
     octaves: 1
     lacunarity: 1

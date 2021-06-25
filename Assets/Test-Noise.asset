@@ -14,18 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   exportFolder:
     guid: 
-  resolution: 100
+  resolution: 256
   filterMode: 2
   redChannelNoiseSettings:
     positionOffset: {x: 5, y: 5, z: 5}
     rotationOffset: {x: 0, y: 0, z: 0}
     scaleOffset: {x: 10, y: 10, z: 10}
     tillingPeriod: 10
-    tillingEnabled: 0
+    tillingEnabled: 1
     dimensions: 3
-    octaves: 3
-    lacunarity: 2.61
-    persistence: 0.428
+    octaves: 5
+    lacunarity: 2.5
+    persistence: 0.3
     woodPatternMultiplier: 1
     turbulence: 0
     noiseType: 2

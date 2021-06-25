@@ -1,10 +1,11 @@
 using DudeiNoise;
 using Unity.Collections;
 using UnityEngine;
+using Utilities;
 
 namespace Procedural
 {
-    public partial class TerrainGenerator : MonoBehaviour
+    public partial class TerrainGenerator : SingletonMonoBehaviour<TerrainGenerator>
     {
         [SerializeField, Tooltip("DEBUG")]
         private TerrainDefinition tempDefinition = null;
@@ -13,27 +14,36 @@ namespace Procedural
         private TerrainRenderer terrainRenderer = null;
         
         private float[,] cachedNoiseMap = null;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            UpdateNoiseMap();
+        }
         
         private void GenerateAndDisplayTerrain()
         {
             CheckNoiseMapUpToDate();
             terrainRenderer.DisplayMesh(GenerateTerrainMesh(), GenerateTerrainTexture(), tempDefinition.ChunkSize);
-        }
+        } 
         
-        private TerrainMeshData GenerateTerrainMesh()
+        public TerrainMeshData GenerateTerrainMesh()
         {
-            int width = tempDefinition.ChunkResolution;
-            int height = tempDefinition.ChunkResolution;
+            int width = TerrainDefinition.MAP_CHUNK_SIZE;
+            int height = TerrainDefinition.MAP_CHUNK_SIZE;
             
             float topLeftCornerX = (width - 1) / -2f;
             float topLeftCornerZ = (height - 1) / 2f;
+
+            int meshSimplificationStep = tempDefinition.LevelOfDetails == 0 ? 1 : tempDefinition.LevelOfDetails * 2;
+            int meshResolution = (width - 1) / meshSimplificationStep +1;
             
             TerrainMeshData meshData = new TerrainMeshData(width, height);
             int vertexIndex = 0;
 
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < height; y += meshSimplificationStep)
             {
-                for (int x = 0; x < width; x++)
+                for (int x = 0; x < width; x += meshSimplificationStep)
                 {
                     float currentHeight = tempDefinition.HeightCurve.Evaluate(cachedNoiseMap[x, y]) * tempDefinition.HeightRange;
                     meshData.vertices[vertexIndex] = new Vector3(topLeftCornerX + x,currentHeight ,topLeftCornerZ - y) + tempDefinition.TerrainOffset;
@@ -41,8 +51,8 @@ namespace Procedural
                     
                     if (x < width - 1 && y < height - 1)
                     {
-                        meshData.AddTriangle(vertexIndex,vertexIndex + width + 1, vertexIndex + width);
-                        meshData.AddTriangle(vertexIndex + width + 1, vertexIndex, vertexIndex + 1);
+                        meshData.AddTriangle(vertexIndex,vertexIndex + meshResolution + 1, vertexIndex + meshResolution);
+                        meshData.AddTriangle(vertexIndex + meshResolution + 1, vertexIndex, vertexIndex + 1);
                     }
 
                     vertexIndex++;
@@ -52,10 +62,10 @@ namespace Procedural
             return meshData;
         }
 
-        private Texture2D GenerateTerrainTexture()
+        public Texture2D GenerateTerrainTexture()
         {
-            int width = tempDefinition.ChunkResolution;
-            int height = tempDefinition.ChunkResolution;
+            int width =  TerrainDefinition.MAP_CHUNK_SIZE;
+            int height =  TerrainDefinition.MAP_CHUNK_SIZE;
             
             Texture2D texture = new Texture2D(width, height);
             texture.filterMode = FilterMode.Point;
@@ -84,8 +94,8 @@ namespace Procedural
         
         private void CheckNoiseMapUpToDate()
         {
-            int width = tempDefinition.ChunkResolution;
-            int height = tempDefinition.ChunkResolution;
+            int width = TerrainDefinition.MAP_CHUNK_SIZE;
+            int height = TerrainDefinition.MAP_CHUNK_SIZE;
 
             if (width * height != cachedNoiseMap.Length)
             {
@@ -97,10 +107,10 @@ namespace Procedural
         private void UpdateNoiseMap()
         {
             if (cachedNoiseMap == null || 
-                cachedNoiseMap.GetLength(0) != tempDefinition.ChunkResolution||
-                cachedNoiseMap.GetLength(1) != tempDefinition.ChunkResolution)
+                cachedNoiseMap.GetLength(0) != TerrainDefinition.MAP_CHUNK_SIZE||
+                cachedNoiseMap.GetLength(1) != TerrainDefinition.MAP_CHUNK_SIZE)
             {
-                cachedNoiseMap = new float[tempDefinition.ChunkResolution , tempDefinition.ChunkResolution];
+                cachedNoiseMap = new float[TerrainDefinition.MAP_CHUNK_SIZE , TerrainDefinition.MAP_CHUNK_SIZE];
             }
             
             Noise.GenerateNoiseMap(ref cachedNoiseMap, tempDefinition.NoiseSettings);
