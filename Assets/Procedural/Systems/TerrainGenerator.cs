@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
 using DudeiNoise;
 using Unity.Collections;
 using UnityEngine;
@@ -15,17 +18,56 @@ namespace Procedural
         
         private float[,] cachedNoiseMap = null;
 
+        public Texture2D cachedTexture = null;
+
+        private Queue<TerrainMeshDataThreadInfo> requestedTerrainQueue = null;
+        
         protected override void Awake()
         {
             base.Awake();
-            UpdateNoiseMap();
+            
+            requestedTerrainQueue = new Queue<TerrainMeshDataThreadInfo>();
+            
+            CheckNoiseMapUpToDate();
+            CheckTextureUpToDate();
         }
-        
+
+        private void Update()
+        {
+            for (int i = 0; i < requestedTerrainQueue.Count; i++)
+            {
+                ProceedRequestedTerrains();
+            }
+        }
+
+        private void ProceedRequestedTerrains()
+        {
+            TerrainMeshDataThreadInfo threadInfo = requestedTerrainQueue.Dequeue();
+            threadInfo.callback?.Invoke(threadInfo.terrainMeshData);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private void GenerateAndDisplayTerrain()
         {
             CheckNoiseMapUpToDate();
-            terrainRenderer.DisplayMesh(GenerateTerrainMesh(), GenerateTerrainTexture(), tempDefinition.ChunkSize);
-        } 
+            CheckTextureUpToDate();
+            
+            terrainRenderer.DisplayMesh(GenerateTerrainMesh(), cachedTexture, tempDefinition.ChunkSize);
+        }
+
+        public void RequestTerrainMesh(Action<TerrainMeshData> onRequest)
+        {
+            ThreadStart threadStart = ThreadProcess;
+
+            new Thread(threadStart).Start();
+            
+            void ThreadProcess()
+            {
+                requestedTerrainQueue.Enqueue(new TerrainMeshDataThreadInfo(onRequest,GenerateTerrainMesh()));
+            }
+        }
         
         public TerrainMeshData GenerateTerrainMesh()
         {
@@ -62,7 +104,7 @@ namespace Procedural
             return meshData;
         }
 
-        public Texture2D GenerateTerrainTexture()
+        private Texture2D GenerateTerrainTexture()
         {
             int width =  TerrainDefinition.MAP_CHUNK_SIZE;
             int height =  TerrainDefinition.MAP_CHUNK_SIZE;
@@ -97,7 +139,7 @@ namespace Procedural
             int width = TerrainDefinition.MAP_CHUNK_SIZE;
             int height = TerrainDefinition.MAP_CHUNK_SIZE;
 
-            if (width * height != cachedNoiseMap.Length)
+            if (cachedNoiseMap == null || width * height != cachedNoiseMap.Length)
             {
                 Debug.LogWarning("Had to regenerate noise map!");
                 UpdateNoiseMap();
@@ -114,6 +156,14 @@ namespace Procedural
             }
             
             Noise.GenerateNoiseMap(ref cachedNoiseMap, tempDefinition.NoiseSettings);
+        }
+
+        private void CheckTextureUpToDate()
+        {
+            if (cachedTexture == null)
+            {
+                cachedTexture = GenerateTerrainTexture();
+            }
         }
     }
 }

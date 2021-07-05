@@ -61,10 +61,16 @@ namespace Procedural
             transform.position = new Vector3(position.x, 0, position.y);
             transform.parent = parent;
 
-            meshFilter.mesh = TerrainGenerator.GenerateTerrainMesh().CreateMesh();
-            meshRenderer.sharedMaterial.mainTexture = TerrainGenerator.GenerateTerrainTexture();
-
             SetVisible(false);
+            
+            meshRenderer.sharedMaterial.mainTexture = TerrainGenerator.cachedTexture;
+
+            TerrainGenerator.RequestTerrainMesh(OnTerrainMeshReceived);
+        }
+
+        private void OnTerrainMeshReceived(TerrainMeshData terrainMeshData)
+        {
+            meshFilter.mesh = terrainMeshData.CreateMesh();
         }
     }
 }
