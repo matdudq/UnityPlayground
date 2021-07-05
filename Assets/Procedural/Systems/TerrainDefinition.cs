@@ -65,12 +65,36 @@ namespace Procedural
             }
         }
 
-        public float HeightRange => heightRange;
+        public float HeightRange
+        {
+            get
+            {
+                return heightRange;
+            }
+        }
 
-        public Vector3 TerrainOffset => terrainOffset;
-        
-        public AnimationCurve HeightCurve => heightCurve;
+        public Vector3 TerrainOffset
+        {
+            get
+            {
+                return terrainOffset;
+            }
+        }
 
-        public int LevelOfDetails => levelOfDetails;
+        public AnimationCurve HeightCurve
+        {
+            get
+            {
+                return heightCurve;
+            }
+        }
+
+        public int LevelOfDetails
+        {
+            get
+            {
+                return levelOfDetails;
+            }
+        }
     }
 }

@@ -6,13 +6,18 @@ namespace Procedural
     public class EndlessTerrain : MonoBehaviour
     {
         [SerializeField] 
-        private float maxViewDistance = 300;
-
+        private LODInfo[] lods = null;
+        
         [SerializeField] 
         private Transform observer = null;
         
         [SerializeField]
         private TerrainChunk chunkPrefab = null;
+
+        [SerializeField] 
+        private float observerMoveThresholdForLodUpdate = 25.0f;
+        
+        private Vector2 lastLodUpdateObserverPosition = Vector3.zero;
         
         private int visibleChunksCount = 1;
 
@@ -35,6 +40,14 @@ namespace Procedural
             }
         }
         
+        private float MaxViewDistance
+        {
+            get
+            {
+                return lods[lods.Length - 1].distanceThreshold;
+            }
+        }
+        
         private void Start()
         {
             Initialize();
@@ -42,14 +55,18 @@ namespace Procedural
 
         private void Update()
         {
-            UpdateVisibleChunks();
+            if ((ObserverPositionXZ - lastLodUpdateObserverPosition).magnitude > observerMoveThresholdForLodUpdate)
+            {
+                lastLodUpdateObserverPosition = ObserverPositionXZ;
+                UpdateVisibleChunks();
+            }
         }
         
         private void Initialize()
         {
             chunkCoordToTerrain = new Dictionary<Vector2Int, TerrainChunk>();
             lastUpdateVisibleTerrainChunks = new List<TerrainChunk>();
-            visibleChunksCount = Mathf.RoundToInt(maxViewDistance / ChunkSize);
+            visibleChunksCount = Mathf.RoundToInt(MaxViewDistance / ChunkSize);
         }
 
         private void UpdateVisibleChunks()
@@ -74,7 +91,7 @@ namespace Procedural
                     if (chunkCoordToTerrain.ContainsKey(viewedChunkCoord))
                     {
                         TerrainChunk viewedChunk = chunkCoordToTerrain[viewedChunkCoord];
-                        viewedChunk.UpdateVisibility(ObserverPositionXZ);
+                        viewedChunk.UpdateVisibility();
                         if (viewedChunk.IsVisible)
                         {
                             lastUpdateVisibleTerrainChunks.Add(viewedChunk);
@@ -83,7 +100,7 @@ namespace Procedural
                     else
                     {
                         TerrainChunk terrainChunk = Instantiate(chunkPrefab);
-                        terrainChunk.Initialize(viewedChunkCoord, ChunkSize, transform);
+                        terrainChunk.Initialize(viewedChunkCoord, ChunkSize, transform, lods, observer);
                         chunkCoordToTerrain.Add(viewedChunkCoord, terrainChunk);
                     }
                 }

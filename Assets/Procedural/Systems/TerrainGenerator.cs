@@ -45,31 +45,29 @@ namespace Procedural
             TerrainMeshDataThreadInfo threadInfo = requestedTerrainQueue.Dequeue();
             threadInfo.callback?.Invoke(threadInfo.terrainMeshData);
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
+        
         private void GenerateAndDisplayTerrain()
         {
             CheckNoiseMapUpToDate();
             CheckTextureUpToDate();
             
-            terrainRenderer.DisplayMesh(GenerateTerrainMesh(), cachedTexture, tempDefinition.ChunkSize);
+            terrainRenderer.DisplayMesh(GenerateTerrainMesh(tempDefinition, tempDefinition.LevelOfDetails), cachedTexture, tempDefinition.ChunkSize);
         }
 
-        public void RequestTerrainMesh(Action<TerrainMeshData> onRequest)
+        public void RequestTerrainMesh(int lod, Action<TerrainMeshData> onRequest)
         {
+            Debug.Log(lod);
             ThreadStart threadStart = ThreadProcess;
 
             new Thread(threadStart).Start();
             
             void ThreadProcess()
             {
-                requestedTerrainQueue.Enqueue(new TerrainMeshDataThreadInfo(onRequest,GenerateTerrainMesh()));
+                requestedTerrainQueue.Enqueue(new TerrainMeshDataThreadInfo(onRequest, GenerateTerrainMesh(tempDefinition, lod)));
             }
         }
         
-        public TerrainMeshData GenerateTerrainMesh()
+        public TerrainMeshData GenerateTerrainMesh(TerrainDefinition terrainDefinition, int lod)
         {
             int width = TerrainDefinition.MAP_CHUNK_SIZE;
             int height = TerrainDefinition.MAP_CHUNK_SIZE;
@@ -77,7 +75,7 @@ namespace Procedural
             float topLeftCornerX = (width - 1) / -2f;
             float topLeftCornerZ = (height - 1) / 2f;
 
-            int meshSimplificationStep = tempDefinition.LevelOfDetails == 0 ? 1 : tempDefinition.LevelOfDetails * 2;
+            int meshSimplificationStep = lod == 0 ? 1 : lod * 2;
             int meshResolution = (width - 1) / meshSimplificationStep +1;
             
             TerrainMeshData meshData = new TerrainMeshData(width, height);
@@ -87,8 +85,12 @@ namespace Procedural
             {
                 for (int x = 0; x < width; x += meshSimplificationStep)
                 {
-                    float currentHeight = tempDefinition.HeightCurve.Evaluate(cachedNoiseMap[x, y]) * tempDefinition.HeightRange;
-                    meshData.vertices[vertexIndex] = new Vector3(topLeftCornerX + x,currentHeight ,topLeftCornerZ - y) + tempDefinition.TerrainOffset;
+                    lock (terrainDefinition.HeightCurve)
+                    {
+                        float currentHeight = terrainDefinition.HeightCurve.Evaluate(cachedNoiseMap[x, y]) * terrainDefinition.HeightRange;
+                        meshData.vertices[vertexIndex] = new Vector3(topLeftCornerX + x,currentHeight ,topLeftCornerZ - y) + terrainDefinition.TerrainOffset;
+                    }
+                    
                     meshData.uvs[vertexIndex] = new Vector2(x/(float)width,y/(float)height);
                     
                     if (x < width - 1 && y < height - 1)
@@ -104,7 +106,7 @@ namespace Procedural
             return meshData;
         }
 
-        private Texture2D GenerateTerrainTexture()
+        private Texture2D GenerateTerrainTexture(TerrainDefinition terrainDefinition)
         {
             int width =  TerrainDefinition.MAP_CHUNK_SIZE;
             int height =  TerrainDefinition.MAP_CHUNK_SIZE;
@@ -118,11 +120,11 @@ namespace Procedural
             {
                 for (int x = 0; x < width; x++)
                 {
-                    for (int i = 0; i < tempDefinition.TerrainLayers.Length; i++)
+                    for (int i = 0; i < terrainDefinition.TerrainLayers.Length; i++)
                     {
-                        if (cachedNoiseMap[x,y] < tempDefinition.TerrainLayers[i].height)
+                        if (cachedNoiseMap[x,y] < terrainDefinition.TerrainLayers[i].height)
                         {
-                            textureArray[y * height + x] = tempDefinition.TerrainLayers[i].terrainColor;
+                            textureArray[y * height + x] = terrainDefinition.TerrainLayers[i].terrainColor;
                             break;
                         }
                     }
@@ -162,7 +164,7 @@ namespace Procedural
         {
             if (cachedTexture == null)
             {
-                cachedTexture = GenerateTerrainTexture();
+                cachedTexture = GenerateTerrainTexture(tempDefinition);
             }
         }
     }
