@@ -2,128 +2,112 @@
 
 namespace Procedural
 {
-    public partial class TerrainChunk : MonoBehaviour
-    {
-        private Vector2 position = Vector2.zero;
+	public partial class EndlessTerrain
+	{
+		private class TerrainChunk
+		{
+			private EndlessTerrain chunkOwner = null;
 
-        private Bounds bounds = new Bounds();
-        
-        [SerializeField] 
-        private MeshRenderer meshRenderer = null;
+			private TerrainChunkRenderer chunkRenderer = null;
+			
+			private Vector2 position = Vector2.zero;
+			
+			private LODTerrainMesh[] lodMeshes;
 
-        [SerializeField] 
-        private MeshFilter meshFilter = null;
+			private int previousLOD = -1;
+			
+			private static TerrainGenerator TerrainGenerator
+			{
+				get
+				{
+					return TerrainGenerator.Instance;
+				}
+			}
 
-        private LODInfo[] detailLevels;
-        private LODTerrainMesh[] lodMeshes;
+			private float MaxViewDistance
+			{
+				get
+				{
+					return chunkOwner.MaxViewDistance;
+				}
+			}
 
-        private int previousLOD = -1;
+			private Vector2 ObserverPositionXZ
+			{
+				get
+				{
+					return chunkOwner.ObserverPositionXZ;
+				}
+			}
 
-        //TODO: REFACTOR
-        private Transform chunkObserver = null;
-        
-        public bool IsVisible
-        {
-            get
-            {
-                return gameObject.activeSelf;
-            }
-        }
+			private LODInfo[] LODs
+			{
+				get
+				{
+					return chunkOwner.lods;
+				}
+			}
+			
+			public TerrainChunk(TerrainChunkRenderer chunkRenderer, EndlessTerrain chunkOwner)
+			{
+				this.chunkRenderer = chunkRenderer;
 
-        private static TerrainGenerator TerrainGenerator
-        {
-            get
-            {
-                return TerrainGenerator.Instance;
-            }
-        }
+				this.chunkOwner = chunkOwner;
+				
+				lodMeshes = new LODTerrainMesh[LODs.Length];
 
-        private float MaxViewDistance
-        {
-            get
-            {
-                return detailLevels[detailLevels.Length - 1].distanceThreshold;
-            }
-        }
-        
-        private Vector2 ObserverPositionXZ
-        {
-            get
-            {
-                return new Vector2(chunkObserver.position.x,chunkObserver.position.z);
-            }
-        }
-        
-        private float BoundsToPositionDistance(Vector3 position)
-        {
-            return Mathf.Sqrt(bounds.SqrDistance(position));
-        }
+				for (int i = 0; i < lodMeshes.Length; i++)
+				{
+					lodMeshes[i] = new LODTerrainMesh(LODs[i].lodLevel, UpdateVisibility);
+				}
+				
+				UpdateVisibility();
+			}
+			
+			public void UpdateVisibility()
+			{
+				float boundsToObserver = chunkRenderer.BoundsToPositionDistance(ObserverPositionXZ);
+				bool isVisible = boundsToObserver <= MaxViewDistance;
 
-        public void SetVisible(bool visible)
-        {
-            gameObject.SetActive(visible);
-        }
+				if (isVisible)
+				{
+					int lodIndex = 0;
+					for (int i = 0; i < LODs.Length - 1; i++)
+					{
+						if (boundsToObserver > LODs[i].distanceThreshold)
+						{
+							lodIndex++;
+						}
+						else
+						{
+							break;
+						}
+					}
 
-        public void UpdateVisibility()
-        {
-            float boundsToObserver = BoundsToPositionDistance(ObserverPositionXZ);
-            bool isVisible = boundsToObserver <= MaxViewDistance;
+					if (previousLOD != lodIndex)
+					{
+						LODTerrainMesh lodTerrainMesh = lodMeshes[lodIndex];
+						if (lodTerrainMesh.hasMesh)
+						{
+							chunkRenderer.SetMesh(lodTerrainMesh.mesh);
+							chunkRenderer.SetTexture(lodTerrainMesh.texture2D);
+						}
+						else if (!lodTerrainMesh.hasRequestedMesh)
+						{
+							lodTerrainMesh.RequestTerrainMesh();
+						}
+					}
+					
+					chunkOwner.lastUpdateVisibleTerrainChunks.Add(this);
+				}
 
-            if (isVisible)
-            {
-                int lodIndex = 0;
-                for (int i = 0; i < detailLevels.Length - 1; i++)
-                {
-                    if (boundsToObserver > detailLevels[i].distanceThreshold)
-                    {
-                        lodIndex++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
+				chunkRenderer.SetVisible(isVisible);
+			}
 
-                if (previousLOD != lodIndex)
-                {
-                    LODTerrainMesh lodTerrainMesh = lodMeshes[lodIndex];
-                    if (lodTerrainMesh.hasMesh)
-                    {
-                        meshFilter.mesh = lodTerrainMesh.mesh;
-                    }
-                    else if(!lodTerrainMesh.hasRequestedMesh)
-                    {
-                        lodTerrainMesh.RequestTerrainMesh();
-                    }
-                }
-            }
-            
-            SetVisible(isVisible);
-        }
-
-        public void Initialize(Vector2 coord, int size, Transform parent, LODInfo[] detailLevels, Transform chunkObserver)
-        {
-            position = coord * size;
-            bounds = new Bounds(position, Vector2.one * size);
-
-            transform.position = new Vector3(position.x, 0, position.y);
-            transform.parent = parent;
-
-            SetVisible(false);
-            
-            meshRenderer.sharedMaterial.mainTexture = TerrainGenerator.cachedTexture;
-            
-            this.detailLevels = detailLevels;
-            lodMeshes = new LODTerrainMesh[detailLevels.Length];
-
-            for (int i = 0; i < lodMeshes.Length; i++)
-            {
-                lodMeshes[i] = new LODTerrainMesh(detailLevels[i].lodLevel, UpdateVisibility);
-            }
-
-            this.chunkObserver = chunkObserver;
-
-            UpdateVisibility();
-        }
-    }
+			public void ForcedSetEnabled(bool enabled)
+			{
+				chunkRenderer.SetVisible(enabled);
+			}
+		}
+	}
 }

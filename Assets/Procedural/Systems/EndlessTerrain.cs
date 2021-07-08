@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Procedural
 {
-    public class EndlessTerrain : MonoBehaviour
+    public partial class EndlessTerrain : MonoBehaviour
     {
         [SerializeField] 
         private LODInfo[] lods = null;
@@ -12,8 +12,8 @@ namespace Procedural
         private Transform observer = null;
         
         [SerializeField]
-        private TerrainChunk chunkPrefab = null;
-
+        private TerrainChunkRenderer chunkRendererPrefab = null;
+        
         [SerializeField] 
         private float observerMoveThresholdForLodUpdate = 25.0f;
         
@@ -73,7 +73,7 @@ namespace Procedural
         {
             foreach (TerrainChunk chunk in lastUpdateVisibleTerrainChunks)
             {
-                chunk.SetVisible(false);
+                chunk.ForcedSetEnabled(false);
             }
             
             lastUpdateVisibleTerrainChunks.Clear();
@@ -92,15 +92,14 @@ namespace Procedural
                     {
                         TerrainChunk viewedChunk = chunkCoordToTerrain[viewedChunkCoord];
                         viewedChunk.UpdateVisibility();
-                        if (viewedChunk.IsVisible)
-                        {
-                            lastUpdateVisibleTerrainChunks.Add(viewedChunk);
-                        }
                     }
                     else
                     {
-                        TerrainChunk terrainChunk = Instantiate(chunkPrefab);
-                        terrainChunk.Initialize(viewedChunkCoord, ChunkSize, transform, lods, observer);
+                        TerrainChunkRenderer terrainChunkRenderer = Instantiate(chunkRendererPrefab);
+                        terrainChunkRenderer.Initialize(viewedChunkCoord, ChunkSize, transform);
+                        
+                        TerrainChunk terrainChunk = new TerrainChunk(terrainChunkRenderer, this);
+                        
                         chunkCoordToTerrain.Add(viewedChunkCoord, terrainChunk);
                     }
                 }

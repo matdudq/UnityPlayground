@@ -17,21 +17,21 @@ namespace Procedural
         [SerializeField] 
         private NoiseTextureChannel activeChanel = NoiseTextureChannel.RED;
 
-        [SerializeField, Range(0,6)] 
+        [SerializeField, Range(0,6)]
         private int levelOfDetails = 1;
         
         [SerializeField]
         private float chunkSize = 10.0f;
-
+        
         [SerializeField] 
         private float heightRange = 10.0f;
-
+        
         [SerializeField] 
         private AnimationCurve heightCurve = null;
         
         [SerializeField]
         private Vector3 terrainOffset = Vector3.zero;
-
+        
         
         public TerrainLayer[] TerrainLayers
         {

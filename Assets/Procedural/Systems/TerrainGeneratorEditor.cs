@@ -57,14 +57,12 @@ namespace Procedural
                 {
                     if (autoUpdate)
                     {
-                        generator.UpdateNoiseMap();
                         generator.GenerateAndDisplayTerrain();
                     }
                 }
 
                 if (!autoUpdate && GUILayout.Button(buttonTitleGC))
                 {
-                    generator.UpdateNoiseMap();
                     generator.GenerateAndDisplayTerrain();
                 }
             }
