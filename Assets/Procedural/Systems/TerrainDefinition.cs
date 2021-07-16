@@ -8,15 +8,13 @@ namespace Procedural
     {
         public const int MAP_CHUNK_SIZE = 241;
         
+        [Header("Terrain preview definition")]
         [SerializeField] 
         private TerrainLayer[] terrainLayers = null;
 
         [SerializeField] 
-        private NoiseTextureSettings textureSettings = null;
-
-        [SerializeField] 
-        private NoiseTextureChannel activeChanel = NoiseTextureChannel.RED;
-
+        private NoiseSettings noiseSettings = null;
+        
         [SerializeField, Range(0,6)]
         private int levelOfDetails = 1;
         
@@ -32,7 +30,6 @@ namespace Procedural
         [SerializeField]
         private Vector3 terrainOffset = Vector3.zero;
         
-        
         public TerrainLayer[] TerrainLayers
         {
             get
@@ -45,15 +42,7 @@ namespace Procedural
         {
             get
             {
-                return TextureSettings.GetNoiseSettingsForChannel(activeChanel);
-            }
-        }
-
-        public NoiseTextureSettings TextureSettings
-        {
-            get
-            {
-                return textureSettings;
+                return noiseSettings;
             }
         }
 

@@ -14,22 +14,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   exportFolder:
     guid: 
-  resolution: 100
+  resolution: 256
   filterMode: 2
   redChannelNoiseSettings:
-    positionOffset: {x: 9, y: 9, z: 9}
+    noiseType: 2
+    positionOffset: {x: 3.5, y: 3.5, z: 3.5}
     rotationOffset: {x: 45, y: 45, z: 45}
-    scaleOffset: {x: 18, y: 18, z: 18}
-    tillingPeriod: 18
+    scaleOffset: {x: 7, y: 7, z: 7}
+    tillingPeriod: 7
     tillingEnabled: 1
-    dimensions: 3
-    octaves: 1
-    lacunarity: 1
+    dimensions: 2
+    octaves: 5
+    lacunarity: 3.12
     persistence: 0
     woodPatternMultiplier: 1
-    turbulence: 0
-    noiseType: 0
+    turbulenceEnabled: 0
+    falloffEnabled: 1
+    falloffShift: 2.11
+    falloffDensity: 2.2
   greenChannelNoiseSettings:
+    noiseType: 0
     positionOffset: {x: 0, y: 0, z: 0}
     rotationOffset: {x: 0, y: 0, z: 0}
     scaleOffset: {x: 1, y: 1, z: 1}
@@ -40,9 +44,12 @@ MonoBehaviour:
     lacunarity: 2
     persistence: 0.5
     woodPatternMultiplier: 1
-    turbulence: 0
-    noiseType: 0
+    turbulenceEnabled: 0
+    falloffEnabled: 0
+    falloffShift: 3
+    falloffDensity: 2.2
   blueChannelNoiseSettings:
+    noiseType: 0
     positionOffset: {x: 0, y: 0, z: 0}
     rotationOffset: {x: 0, y: 0, z: 0}
     scaleOffset: {x: 1, y: 1, z: 1}
@@ -53,9 +60,12 @@ MonoBehaviour:
     lacunarity: 2
     persistence: 0.5
     woodPatternMultiplier: 1
-    turbulence: 0
-    noiseType: 0
+    turbulenceEnabled: 0
+    falloffEnabled: 0
+    falloffShift: 3
+    falloffDensity: 2.2
   alphaChannelNoiseSettings:
+    noiseType: 0
     positionOffset: {x: 0, y: 0, z: 0}
     rotationOffset: {x: 0, y: 0, z: 0}
     scaleOffset: {x: 1, y: 1, z: 1}
@@ -66,5 +76,7 @@ MonoBehaviour:
     lacunarity: 2
     persistence: 0.5
     woodPatternMultiplier: 1
-    turbulence: 0
-    noiseType: 0
+    turbulenceEnabled: 0
+    falloffEnabled: 0
+    falloffShift: 3
+    falloffDensity: 2.2

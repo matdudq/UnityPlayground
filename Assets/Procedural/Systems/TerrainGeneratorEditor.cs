@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿using DudeiNoise;
+using DudeiNoise.Editor;
+using UnityEditor;
 using UnityEngine;
 
 namespace Procedural
@@ -13,57 +15,64 @@ namespace Procedural
             private GUIContent buttonTitleGC = null;
             private GUIContent autoUpdateToogleGC = null;
             
-            private SerializedProperty targetDefinitionSP = null;
+            private SerializedProperty terrainPreviewDefinitionSP = null;
 
-            private Editor targetDefinitionEditor = null;
-            private Editor target2DefinitionEditor = null;
-            
+            private Editor terrainPreviewDefinitionEditor  = null;
+
             private bool autoUpdate = true;
+
+            public Editor TerrainPreviewDefinitionEditor
+            {
+                get
+                {
+                    if (terrainGenerator != null && terrainPreviewDefinitionEditor == null)
+                    {
+                        terrainPreviewDefinitionEditor = CreateEditor(terrainGenerator.previewDefinition);
+                    }
+                    
+                    return terrainPreviewDefinitionEditor;
+                }
+            }
 
             private void OnEnable()
             {
                 terrainGenerator = (target as TerrainGenerator);
-                
                 buttonTitleGC = new GUIContent("Regenerate");
                 autoUpdateToogleGC = new GUIContent("Auto update");
+                terrainPreviewDefinitionSP = serializedObject.FindProperty("previewDefinition");
                 
-                targetDefinitionSP = serializedObject.FindProperty("tempDefinition");
-                
-                if (terrainGenerator != null)
-                {
-                    targetDefinitionEditor = CreateEditor(terrainGenerator.tempDefinition);
-                    target2DefinitionEditor = CreateEditor(terrainGenerator.tempDefinition.TextureSettings);
-                }
-
+               
             }
 
             public override void OnInspectorGUI()
             {
-                TerrainGenerator generator = (TerrainGenerator)target;
-
                 EditorGUI.BeginChangeCheck();
-                
-                if (targetDefinitionSP.objectReferenceValue != null)
-                {
-                    targetDefinitionEditor.DrawDefaultInspector();
-                    target2DefinitionEditor.DrawDefaultInspector();
-                }
                 
                 DrawDefaultInspector();
 
+                if (terrainPreviewDefinitionSP.objectReferenceValue != null)
+                {
+                
+                        GUILayout.BeginVertical();
+                    
+                        TerrainPreviewDefinitionEditor.DrawDefaultInspector();
+                        
+                        GUILayout.EndVertical();
+                }
+                
                 autoUpdate = GUILayout.Toggle(autoUpdate, autoUpdateToogleGC);
                 
                 if (EditorGUI.EndChangeCheck())
                 {
                     if (autoUpdate)
                     {
-                        generator.GenerateAndDisplayTerrain();
+                        terrainGenerator.GenerateAndDisplayTerrain();
                     }
                 }
 
                 if (!autoUpdate && GUILayout.Button(buttonTitleGC))
                 {
-                    generator.GenerateAndDisplayTerrain();
+                    terrainGenerator.GenerateAndDisplayTerrain();
                 }
             }
         }

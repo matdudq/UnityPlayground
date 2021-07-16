@@ -11,18 +11,22 @@ namespace Procedural
 {
     public partial class TerrainGenerator : SingletonMonoBehaviour<TerrainGenerator>
     {
-        [SerializeField, Tooltip("DEBUG")]
-        private TerrainDefinition tempDefinition = null;
+        [Header("Editor preview")]
+        [SerializeField]
+        private TerrainDefinition previewDefinition = null;
 
-        [SerializeField, Tooltip("DEBUG")]
+        [SerializeField]
         private TerrainRenderer terrainRenderer = null;
         
         private Queue<ThreadRequestData<TerrainData>> requestedTerrainQueue   = null;
-        
+
+       
+        #region Unity methods
+
         protected override void Awake()
         {
             base.Awake();
-
+            
             requestedTerrainQueue = new Queue<ThreadRequestData<TerrainData>>();
         }
 
@@ -34,13 +38,9 @@ namespace Procedural
             }
         }
 
-        private void ProceedRequestedTerrains()
-        {
-            ThreadRequestData<TerrainData> requestedMeshData = requestedTerrainQueue.Dequeue();
-            requestedMeshData.callback?.Invoke(requestedMeshData.requestedData);
-        }
+        #endregion Unity methods
         
-        public void RequestTerrain(int lod, Vector2 origin, Action<TerrainData> onRequest = null)
+        public void RequestTerrain(int lod, Vector2 tile, Action<TerrainData> onRequest = null)
         {
             ThreadStart threadStart = ThreadProcess;
 
@@ -48,28 +48,36 @@ namespace Procedural
 
             void ThreadProcess()
             {
-                TerrainData terrainData =  Generate(lod, origin);
-                
-                requestedTerrainQueue.Enqueue(new ThreadRequestData<TerrainData>(onRequest, terrainData));
+                requestedTerrainQueue.Enqueue(new ThreadRequestData<TerrainData>(onRequest,  Generate(lod, tile)));
             }
         }
 
-        public TerrainData Generate(int lod, Vector2 origin)
+        public TerrainData Generate(int lod, Vector2 tile)
         {
-            float[,] terrainHeightMap = GenerateHeightMapForOrigin(origin);
+            float[,] terrainHeightMap = GenerateHeightMapForOrigin(tile);
             TerrainMeshData meshData = GenerateTerrainMesh(terrainHeightMap,lod);
-            Texture2D texture2D = GenerateTerrainTexture(terrainHeightMap);
             
-            return new TerrainData(meshData,texture2D);
+            return new TerrainData(meshData,terrainHeightMap);
         }
         
-        private float[,] GenerateHeightMapForOrigin(Vector2 origin)
+        public float[,] GenerateHeightMapForOrigin(Vector2 tile)
         {
-            float[,] cachedNoiseMap = new float[TerrainDefinition.MAP_CHUNK_SIZE, TerrainDefinition.MAP_CHUNK_SIZE];
+            lock (previewDefinition.NoiseSettings)
+            {
+                float[,] cachedNoiseMap = new float[TerrainDefinition.MAP_CHUNK_SIZE, TerrainDefinition.MAP_CHUNK_SIZE];
             
-            Noise.GenerateNoiseMap(ref cachedNoiseMap, tempDefinition.NoiseSettings);
+                Vector3 cachedPositionOffset = previewDefinition.NoiseSettings.positionOffset;
+            
+                Vector2 noiseSpaceOffset = new Vector2(tile.x * previewDefinition.NoiseSettings.scaleOffset.x, -tile.y * previewDefinition.NoiseSettings.scaleOffset.y);
 
-            return cachedNoiseMap;
+                previewDefinition.NoiseSettings.positionOffset = noiseSpaceOffset;
+            
+                Noise.GenerateNoiseMap(ref cachedNoiseMap, previewDefinition.NoiseSettings);
+            
+                previewDefinition.NoiseSettings.positionOffset = cachedPositionOffset;
+
+                return cachedNoiseMap;
+            }
         }
         
         public TerrainMeshData GenerateTerrainMesh(float[,] terrainHeightMap, int lod)
@@ -90,10 +98,10 @@ namespace Procedural
             {
                 for (int x = 0; x < width; x += meshSimplificationStep)
                 {
-                    lock (tempDefinition.HeightCurve)
+                    lock (previewDefinition.HeightCurve)
                     {
-                        float currentHeight = tempDefinition.HeightCurve.Evaluate(terrainHeightMap[x, y]) * tempDefinition.HeightRange;
-                        meshData.vertices[vertexIndex] = new Vector3(topLeftCornerX + x, currentHeight, topLeftCornerZ - y) + tempDefinition.TerrainOffset;
+                        float currentHeight = previewDefinition.HeightCurve.Evaluate(terrainHeightMap[x, y]) * previewDefinition.HeightRange;
+                        meshData.vertices[vertexIndex] = new Vector3(topLeftCornerX + x, currentHeight, topLeftCornerZ - y) + previewDefinition.TerrainOffset;
                     }
 
                     meshData.uvs[vertexIndex] = new Vector2(x / (float) width, y / (float) height);
@@ -111,7 +119,7 @@ namespace Procedural
             return meshData;
         }
 
-        private Texture2D GenerateTerrainTexture(float[,] terrainHeightMap)
+        public Texture2D GenerateTerrainTexture(float[,] terrainHeightMap)
         {
             int width = TerrainDefinition.MAP_CHUNK_SIZE;
             int height = TerrainDefinition.MAP_CHUNK_SIZE;
@@ -125,11 +133,11 @@ namespace Procedural
             {
                 for (int x = 0; x < width; x++)
                 {
-                    for (int i = 0; i < tempDefinition.TerrainLayers.Length; i++)
+                    for (int i = 0; i < previewDefinition.TerrainLayers.Length; i++)
                     {
-                        if (terrainHeightMap[x, y] >= tempDefinition.TerrainLayers[i].height)
+                        if (terrainHeightMap[x, y] >= previewDefinition.TerrainLayers[i].height)
                         {
-                            textureArray[y * height + x] = tempDefinition.TerrainLayers[i].terrainColor;
+                            textureArray[y * height + x] = previewDefinition.TerrainLayers[i].terrainColor;
                         }
                         else
                         {
@@ -144,14 +152,26 @@ namespace Procedural
             return texture;
         }
         
+        private void ProceedRequestedTerrains()
+        {
+            ThreadRequestData<TerrainData> requestedMeshData = requestedTerrainQueue.Dequeue();
+            requestedMeshData.callback?.Invoke(requestedMeshData.requestedData);
+        }
+        
         #region Editor
 
         #if UNITY_EDITOR
 
         private void GenerateAndDisplayTerrain()
         {
-            TerrainData terrainData = Generate(tempDefinition.LevelOfDetails, Vector2.zero);
-            terrainRenderer.DisplayMesh(terrainData.meshData, terrainData.terrainTexture, tempDefinition.ChunkSize);
+            if (previewDefinition == null)
+            {
+                return;
+            }
+            
+            TerrainData terrainData = Generate(previewDefinition.LevelOfDetails, previewDefinition.NoiseSettings.positionOffset);
+            Texture2D terrainTexture = GenerateTerrainTexture(terrainData.heightMap);
+            terrainRenderer.DisplayMesh(terrainData.meshData, terrainTexture, previewDefinition.ChunkSize);
         }
 
         #endif

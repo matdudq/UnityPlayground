@@ -58,7 +58,7 @@ namespace Procedural
 
 				for (int i = 0; i < lodMeshes.Length; i++)
 				{
-					lodMeshes[i] = new LODTerrainMesh(LODs[i].lodLevel, UpdateVisibility);
+					lodMeshes[i] = new LODTerrainMesh(LODs[i].lodLevel, chunkRenderer.Coords, UpdateVisibility);
 				}
 				
 				UpdateVisibility();

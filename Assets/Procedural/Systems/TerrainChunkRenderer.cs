@@ -12,6 +12,16 @@ namespace Procedural
 		
 		private Bounds bounds = new Bounds();
 		
+		private Vector2 coords = Vector2.zero;
+
+		public Vector2 Coords
+		{
+			get
+			{
+				return coords;
+			}
+		}
+		
 		public void SetVisible(bool visible)
 		{
 			gameObject.SetActive(visible);
@@ -19,6 +29,8 @@ namespace Procedural
 
 		public void Initialize(Vector2 coord, int size, Transform parent)
 		{
+			this.coords = coord;
+			
 			Vector2 position = coord * size;
 			bounds = new Bounds(position, Vector2.one * size);
 			
@@ -29,6 +41,7 @@ namespace Procedural
 
 		public void SetTexture(Texture2D newTexture)
 		{
+			meshRenderer.sharedMaterial = meshRenderer.material;
 			meshRenderer.sharedMaterial.mainTexture = newTexture;
 		}
 

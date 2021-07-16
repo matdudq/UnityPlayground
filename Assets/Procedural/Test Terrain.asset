@@ -13,23 +13,37 @@ MonoBehaviour:
   m_Name: Test Terrain
   m_EditorClassIdentifier: 
   terrainLayers:
-  - height: 0.35
+  - height: 0
     terrainColor: {r: 0.29411766, g: 0.47058827, b: 0.8117648, a: 1}
   - height: 0.4
     terrainColor: {r: 0.9725491, g: 0.9294118, b: 0.34117648, a: 1}
-  - height: 0.5
+  - height: 0.43
     terrainColor: {r: 0.18431373, g: 0.49411768, b: 0.12941177, a: 1}
   - height: 0.55
     terrainColor: {r: 0.18431373, g: 0.29803923, b: 0.04705883, a: 1}
-  - height: 0.8
+  - height: 0.6
     terrainColor: {r: 0.29411766, g: 0.25490198, b: 0.19215688, a: 1}
-  - height: 1
+  - height: 0.65
     terrainColor: {r: 1, g: 1, b: 1, a: 0}
-  textureSettings: {fileID: 11400000, guid: a252cc28c88dcb0409ddbf0244022e53, type: 2}
-  activeChanel: 0
-  levelOfDetails: 6
+  noiseSettings:
+    noiseType: 2
+    positionOffset: {x: 8.03, y: 0, z: 0}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    scaleOffset: {x: 4.7, y: 4, z: 4}
+    tillingPeriod: 44
+    tillingEnabled: 0
+    dimensions: 2
+    octaves: 6
+    lacunarity: 2
+    persistence: 0.5
+    woodPatternMultiplier: 1
+    turbulenceEnabled: 0
+    falloffEnabled: 0
+    falloffShift: 2.14
+    falloffDensity: 3
+  levelOfDetails: 5
   chunkSize: 1
-  heightRange: 15
+  heightRange: 50
   heightCurve:
     serializedVersion: 2
     m_Curve:
@@ -43,19 +57,37 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.4
-      value: 0
-      inSlope: -0.025187327
-      outSlope: -0.025187327
+      time: 0.20014215
+      value: 0.0018211501
+      inSlope: 0.14790188
+      outSlope: 0.14790188
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.123224884
+      inWeight: 0.33333334
+      outWeight: 0.5193719
+    - serializedVersion: 3
+      time: 0.6206796
+      value: 0.49744457
+      inSlope: 4.5627046
+      outSlope: 4.5627046
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.1631709
+    - serializedVersion: 3
+      time: 0.82592434
+      value: 0.99335694
+      inSlope: 0.08299338
+      outSlope: 0.08299338
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.6923686
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 2
-      outSlope: 2
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0

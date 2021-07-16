@@ -5,12 +5,12 @@ namespace Procedural
 	public class TerrainData
 	{
 		public TerrainMeshData meshData = null;
-		public Texture2D terrainTexture = null;
+		public float[,] heightMap = null;
 
-		public TerrainData(TerrainMeshData meshData, Texture2D terrainTexture)
+		public TerrainData(TerrainMeshData meshData, float[,] heightMap)
 		{
 			this.meshData = meshData;
-			this.terrainTexture = terrainTexture;
+			this.heightMap = heightMap;
 		}
 	}
 }

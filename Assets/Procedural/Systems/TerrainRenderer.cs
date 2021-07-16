@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Procedural
 {
@@ -16,6 +17,11 @@ namespace Procedural
             terrainRenderer.sharedMaterial.mainTexture = texture;
 
             transform.localScale = Vector3.one * size;
+        }
+
+        private void Awake()
+        {
+            gameObject.SetActive(false);
         }
     }
 }

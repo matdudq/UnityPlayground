@@ -7,31 +7,35 @@ namespace Procedural
     {
         private class LODTerrainMesh
         {
-            public Texture2D texture2D = null;
             public int lod = 0;
+            public Vector2 tilePosition = Vector2.zero;
+            
             public Mesh mesh = null;
+            public Texture2D texture2D = null;
+            
             public bool hasRequestedMesh = false;
             public bool hasMesh = false;
 
-            private Action meshReceivedCallback = null;
+            private event Action meshReceivedCallback = null;
             
-            public LODTerrainMesh(int lod, Action meshReceivedCallback = null)
+            public LODTerrainMesh(int lod, Vector2 tilePosition, Action meshReceivedCallback = null)
             {
                 this.lod = lod;
                 this.meshReceivedCallback = meshReceivedCallback;
+                this.tilePosition = tilePosition;
             }
 
             public void RequestTerrainMesh()
             {
                 hasRequestedMesh = true;
-                TerrainGenerator.Instance.RequestTerrain(lod,Vector2.zero, OnTerrainMeshReceived);
+                TerrainGenerator.Instance.RequestTerrain(lod, tilePosition, OnTerrainMeshReceived);
             }
             
             private void OnTerrainMeshReceived(TerrainData terrainMeshData)
             {
                 hasMesh = true;
-                mesh = terrainMeshData.meshData.CreateMesh();
-                texture2D = terrainMeshData.terrainTexture;
+                mesh = terrainMeshData.GenerateTerrainMesh();
+                texture2D = terrainMeshData.GenerateTerrainTexture();
                 meshReceivedCallback?.Invoke();
             }
         }
