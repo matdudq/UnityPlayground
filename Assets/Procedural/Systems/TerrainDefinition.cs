@@ -6,7 +6,7 @@ namespace Procedural
     [CreateAssetMenu(fileName = nameof(TerrainDefinition), menuName = "Procedural/" + nameof(TerrainDefinition), order = 1)]
     public class TerrainDefinition : ScriptableObject
     {
-        public const int MAP_CHUNK_SIZE = 241;
+        public const int MAP_CHUNK_SIZE = 97;
         
         [Header("Terrain preview definition")]
         [SerializeField] 
@@ -15,7 +15,7 @@ namespace Procedural
         [SerializeField] 
         private NoiseSettings noiseSettings = null;
         
-        [SerializeField, Range(0,6)]
+        [SerializeField, Range(0,4)]
         private int levelOfDetails = 1;
         
         [SerializeField]
