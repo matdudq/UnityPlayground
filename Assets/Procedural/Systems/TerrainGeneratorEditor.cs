@@ -27,7 +27,7 @@ namespace Procedural
                 {
                     if (terrainGenerator != null && terrainPreviewDefinitionEditor == null)
                     {
-                        terrainPreviewDefinitionEditor = CreateEditor(terrainGenerator.previewDefinition);
+                        terrainPreviewDefinitionEditor = CreateEditor(terrainGenerator.definition);
                     }
                     
                     return terrainPreviewDefinitionEditor;
@@ -39,9 +39,7 @@ namespace Procedural
                 terrainGenerator = (target as TerrainGenerator);
                 buttonTitleGC = new GUIContent("Regenerate");
                 autoUpdateToogleGC = new GUIContent("Auto update");
-                terrainPreviewDefinitionSP = serializedObject.FindProperty("previewDefinition");
-                
-               
+                terrainPreviewDefinitionSP = serializedObject.FindProperty("definition");
             }
 
             public override void OnInspectorGUI()
@@ -52,12 +50,11 @@ namespace Procedural
 
                 if (terrainPreviewDefinitionSP.objectReferenceValue != null)
                 {
+                    GUILayout.BeginVertical();
                 
-                        GUILayout.BeginVertical();
+                    TerrainPreviewDefinitionEditor.DrawDefaultInspector();
                     
-                        TerrainPreviewDefinitionEditor.DrawDefaultInspector();
-                        
-                        GUILayout.EndVertical();
+                    GUILayout.EndVertical();
                 }
                 
                 autoUpdate = GUILayout.Toggle(autoUpdate, autoUpdateToogleGC);

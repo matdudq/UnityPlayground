@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using DudeiNoise;
 using Procedural.Utilities;
@@ -15,7 +16,7 @@ namespace Procedural
     {
         [Header("Editor preview")]
         [SerializeField]
-        private TerrainDefinition previewDefinition = null;
+        private TerrainDefinition definition = null;
 
         [SerializeField]
         private TerrainRenderer terrainRenderer = null;
@@ -63,19 +64,19 @@ namespace Procedural
         
         public float[,] GenerateHeightMapForOrigin(Vector2 tile)
         {
-            lock (previewDefinition.NoiseSettings)
+            lock (definition.NoiseSettings)
             {
                 float[,] cachedNoiseMap = new float[TerrainDefinition.MAP_CHUNK_SIZE, TerrainDefinition.MAP_CHUNK_SIZE];
             
-                Vector3 cachedPositionOffset = previewDefinition.NoiseSettings.positionOffset;
+                Vector3 cachedPositionOffset = definition.NoiseSettings.positionOffset;
             
-                Vector2 noiseSpaceOffset = new Vector2(tile.x * previewDefinition.NoiseSettings.scaleOffset.x, -tile.y * previewDefinition.NoiseSettings.scaleOffset.y);
+                Vector2 noiseSpaceOffset = new Vector2(tile.x * definition.NoiseSettings.scaleOffset.x, -tile.y * definition.NoiseSettings.scaleOffset.y);
 
-                previewDefinition.NoiseSettings.positionOffset = noiseSpaceOffset;
+                definition.NoiseSettings.positionOffset = noiseSpaceOffset;
                 
-                Noise.GenerateNoiseMap(ref cachedNoiseMap, previewDefinition.NoiseSettings);
+                Noise.GenerateNoiseMap(ref cachedNoiseMap, definition.NoiseSettings);
 
-                previewDefinition.NoiseSettings.positionOffset = cachedPositionOffset;
+                definition.NoiseSettings.positionOffset = cachedPositionOffset;
 
                 return cachedNoiseMap;
             }
@@ -99,10 +100,10 @@ namespace Procedural
             {
                 for (int x = 0; x < width; x += meshSimplificationStep)
                 {
-                    lock (previewDefinition.HeightCurve)
+                    lock (definition.HeightCurve)
                     {
-                        float currentHeight = previewDefinition.HeightCurve.Evaluate(terrainHeightMap[x, y]) * previewDefinition.HeightRange;
-                        meshData.vertices[vertexIndex] = new Vector3(topLeftCornerX + x, currentHeight, topLeftCornerZ - y) + previewDefinition.TerrainOffset;
+                        float currentHeight = definition.HeightCurve.Evaluate(terrainHeightMap[x, y]) * definition.HeightRange;
+                        meshData.vertices[vertexIndex] = new Vector3(topLeftCornerX + x, currentHeight, topLeftCornerZ - y) + definition.TerrainOffset;
                     }
 
                     meshData.uvs[vertexIndex] = new Vector2(x / (float) width, y / (float) height);
@@ -131,15 +132,29 @@ namespace Procedural
             texture.wrapMode = TextureWrapMode.Clamp;
             NativeArray<Color32> textureArray = texture.GetRawTextureData<Color32>();
 
+            TerrainLayer topTerrainLayer = new TerrainLayer()
+            {
+                height = 1.0f,
+                terrainColor = definition.TerrainLayers.Last().terrainColor
+            };
+            
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
-                    for (int i = 0; i < previewDefinition.TerrainLayers.Length; i++)
+                    for (int i = 0; i < definition.TerrainLayers.Length; i++)
                     {
-                        if (terrainHeightMap[x, y] >= previewDefinition.TerrainLayers[i].height)
+                        if (terrainHeightMap[x, y] >= definition.TerrainLayers[i].height)
                         {
-                            textureArray[y * height + x] = previewDefinition.TerrainLayers[i].terrainColor;
+                            TerrainLayer downLayer = definition.TerrainLayers[i];
+                            TerrainLayer upLayer = i == definition.TerrainLayers.Length - 1  ? topTerrainLayer : definition.TerrainLayers[i + 1];
+                            
+                            float layerHeight = upLayer.height - downLayer.height;
+                            float positionOnLayer = terrainHeightMap[x, y] - downLayer.height;
+                            float currentLayerPositionRatio = positionOnLayer / layerHeight;
+                            
+                            Color blendedColor = Color.Lerp(downLayer.terrainColor,upLayer.terrainColor, currentLayerPositionRatio);
+                            textureArray[y * height + x] = blendedColor;
                         }
                         else
                         {
@@ -166,14 +181,14 @@ namespace Procedural
 
         private void GenerateAndDisplayTerrain()
         {
-            if (previewDefinition == null)
+            if (definition == null)
             {
                 return;
             }
             
-            TerrainData terrainData = Generate(previewDefinition.LevelOfDetails, previewDefinition.NoiseSettings.positionOffset);
+            TerrainData terrainData = Generate(definition.LevelOfDetails, definition.NoiseSettings.positionOffset);
             Texture2D terrainTexture = GenerateTerrainTexture(terrainData.heightMap);
-            terrainRenderer.DisplayMesh(terrainData.meshData, terrainTexture, previewDefinition.ChunkSize);
+            terrainRenderer.DisplayMesh(terrainData.meshData, terrainTexture, definition.ChunkSize);
         }
 
         #endif

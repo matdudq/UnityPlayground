@@ -14,83 +14,65 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   terrainLayers:
   - height: 0
-    terrainColor: {r: 0.29411766, g: 0.47058827, b: 0.8117648, a: 1}
-  - height: 0.4
-    terrainColor: {r: 0.9725491, g: 0.9294118, b: 0.34117648, a: 1}
-  - height: 0.43
-    terrainColor: {r: 0.18431373, g: 0.49411768, b: 0.12941177, a: 1}
-  - height: 0.55
-    terrainColor: {r: 0.18431373, g: 0.29803923, b: 0.04705883, a: 1}
+    terrainColor: {r: 0.7607844, g: 0.64705884, b: 0.47450984, a: 1}
+  - height: 0.3
+    terrainColor: {r: 0.7607844, g: 0.64705884, b: 0.47450984, a: 1}
+  - height: 0.33
+    terrainColor: {r: 0.8773585, g: 0.59194285, b: 0.44281775, a: 1}
+  - height: 0.45
+    terrainColor: {r: 0.8862746, g: 0.8862746, b: 0.6666667, a: 1}
   - height: 0.6
-    terrainColor: {r: 0.29411766, g: 0.25490198, b: 0.19215688, a: 1}
+    terrainColor: {r: 0.39607847, g: 0.6431373, b: 0.37254903, a: 1}
   - height: 0.65
-    terrainColor: {r: 1, g: 1, b: 1, a: 0}
+    terrainColor: {r: 0.39607847, g: 0.6431373, b: 0.37254903, a: 1}
   noiseSettings:
     noiseType: 2
-    positionOffset: {x: 8.03, y: 0, z: 0}
+    positionOffset: {x: 0, y: 0, z: 0}
     rotationOffset: {x: 0, y: 0, z: 0}
-    scaleOffset: {x: 4.7, y: 4, z: 4}
+    scaleOffset: {x: 4, y: 4, z: 4}
     tillingPeriod: 44
     tillingEnabled: 0
     dimensions: 2
-    octaves: 6
-    lacunarity: 2
-    persistence: 0.5
+    octaves: 8
+    lacunarity: 3.2
+    persistence: 0.2
     woodPatternMultiplier: 1
     turbulenceEnabled: 0
     falloffEnabled: 0
-    falloffShift: 2.14
-    falloffDensity: 3
-  levelOfDetails: 5
+    falloffShift: 4.49
+    falloffDensity: 2.13
+  levelOfDetails: 0
   chunkSize: 1
-  heightRange: 50
+  heightRange: 30
   heightCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
+      inSlope: 0.9422448
+      outSlope: 0.9422448
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.20014215
-      value: 0.0018211501
-      inSlope: 0.14790188
-      outSlope: 0.14790188
-      tangentMode: 0
+      time: 0.8425225
+      value: 0.79386246
+      inSlope: 1.1256208
+      outSlope: 1.1256208
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.5193719
-    - serializedVersion: 3
-      time: 0.6206796
-      value: 0.49744457
-      inSlope: 4.5627046
-      outSlope: 4.5627046
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.1631709
-    - serializedVersion: 3
-      time: 0.82592434
-      value: 0.99335694
-      inSlope: 0.08299338
-      outSlope: 0.08299338
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.6923686
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
+      inSlope: 1.3089968
+      outSlope: 1.3089968
+      tangentMode: 34
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.33333334
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
