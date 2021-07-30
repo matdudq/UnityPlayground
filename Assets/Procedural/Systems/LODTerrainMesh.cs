@@ -28,7 +28,8 @@ namespace Procedural
             public void RequestTerrainMesh()
             {
                 hasRequestedMesh = true;
-                TerrainGenerator.Instance.RequestTerrain(lod, tilePosition, OnTerrainMeshReceived);
+                //TerrainGenerator.Instance.RequestTerrain(lod, tilePosition, OnTerrainMeshReceived);
+                OnTerrainMeshReceived(TerrainGenerator.Instance.Generate(lod, tilePosition));
             }
             
             private void OnTerrainMeshReceived(TerrainData terrainMeshData)

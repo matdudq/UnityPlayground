@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using DudeiNoise;
 using Procedural.Utilities;
 using Unity.Collections;
 using UnityEngine;
 using Utilities;
+using Debug = UnityEngine.Debug;
 
 namespace Procedural
 {
@@ -19,8 +21,7 @@ namespace Procedural
         private TerrainRenderer terrainRenderer = null;
         
         private Queue<ThreadRequestData<TerrainData>> requestedTerrainQueue   = null;
-
-       
+        
         #region Unity methods
 
         protected override void Awake()
@@ -71,9 +72,9 @@ namespace Procedural
                 Vector2 noiseSpaceOffset = new Vector2(tile.x * previewDefinition.NoiseSettings.scaleOffset.x, -tile.y * previewDefinition.NoiseSettings.scaleOffset.y);
 
                 previewDefinition.NoiseSettings.positionOffset = noiseSpaceOffset;
-            
+                
                 Noise.GenerateNoiseMap(ref cachedNoiseMap, previewDefinition.NoiseSettings);
-            
+
                 previewDefinition.NoiseSettings.positionOffset = cachedPositionOffset;
 
                 return cachedNoiseMap;
