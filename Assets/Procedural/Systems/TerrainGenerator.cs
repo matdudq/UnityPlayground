@@ -116,6 +116,7 @@ namespace Procedural
                 }
             }
 
+            meshData.ApplyFlatShading();
             return meshData;
         }
 

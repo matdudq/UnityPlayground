@@ -28,6 +28,21 @@ namespace Procedural
             traingleIndex += 3;
         }
 
+        public void ApplyFlatShading()
+        {
+            Vector3[] flatShadedVertices = new Vector3[triangles.Length];
+            Vector2[] flatShadedUV = new Vector2[triangles.Length];
+
+            for (int i = 0; i < triangles.Length; i++)
+            {
+                flatShadedVertices[i] = vertices[triangles[i]];
+                flatShadedUV[i] = uvs[triangles[i]];
+                triangles[i] = i;
+            }
+
+            vertices = flatShadedVertices;
+            uvs = flatShadedUV;
+        }
         public Mesh CreateMesh()
         {
             Mesh mesh = new Mesh
