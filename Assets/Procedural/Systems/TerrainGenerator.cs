@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -54,35 +55,59 @@ namespace Procedural
             }
         }
 
-        public TerrainData Generate(int lod, Vector2 tile)
+        public void RequestTerrainByJob(int lod, Vector2 tile, Action<TerrainData> onRequest = null)
         {
-            float[,] terrainHeightMap = GenerateHeightMapForOrigin(tile);
-            TerrainMeshData meshData = GenerateTerrainMesh(terrainHeightMap,lod);
+            GenerateHeightMapForOrigin(tile, OnGenerateHeightMapCompleted);
             
-            return new TerrainData(meshData,terrainHeightMap);
-        }
-        
-        public float[,] GenerateHeightMapForOrigin(Vector2 tile)
-        {
-            lock (definition.NoiseSettings)
+            void OnGenerateHeightMapCompleted(NoiseTexture heightMap)
             {
-                float[,] cachedNoiseMap = new float[TerrainDefinition.MAP_CHUNK_SIZE, TerrainDefinition.MAP_CHUNK_SIZE];
+                GenerateMeshAndTexture(lod, heightMap, onRequest);
+            }
+        }
+
+        private void GenerateMeshAndTexture(int lod, NoiseTexture noiseTexture, Action<TerrainData> onRequest = null)
+        {
+            StartCoroutine(GenerateMeshAndTextureProcess());
             
-                Vector3 cachedPositionOffset = definition.NoiseSettings.positionOffset;
-            
-                Vector2 noiseSpaceOffset = new Vector2(tile.x * definition.NoiseSettings.scaleOffset.x, -tile.y * definition.NoiseSettings.scaleOffset.y);
-
-                definition.NoiseSettings.positionOffset = noiseSpaceOffset;
-                
-                Noise.GenerateNoiseMap(ref cachedNoiseMap, definition.NoiseSettings);
-
-                definition.NoiseSettings.positionOffset = cachedPositionOffset;
-
-                return cachedNoiseMap;
+            IEnumerator GenerateMeshAndTextureProcess()
+            {
+                GenerateMeshJob generateMeshJob = new GenerateMeshJob()
+                {
+                    size = TerrainDefinition.MAP_CHUNK_SIZE,
+                    lod = lod,
+                };
             }
         }
         
-        public TerrainMeshData GenerateTerrainMesh(float[,] terrainHeightMap, int lod)
+        public TerrainData Generate(int lod, Vector2 tile)
+        {
+            NoiseTexture noiseTexture = GenerateHeightMapForOrigin(tile);
+            
+            TerrainMeshData meshData = GenerateTerrainMesh(noiseTexture,lod);
+            
+            Texture2D texture2D = GenerateTerrainTexture(noiseTexture);
+            
+            return new TerrainData(meshData, noiseTexture, texture2D);
+        }
+        
+        public NoiseTexture GenerateHeightMapForOrigin(Vector2 tile, Action<NoiseTexture> onCompleted)
+        {
+            NoiseTexture noiseTexture = new NoiseTexture(TerrainDefinition.MAP_CHUNK_SIZE);
+                
+            Vector3 cachedPositionOffset = definition.NoiseSettings.positionOffset;
+        
+            Vector2 noiseSpaceOffset = new Vector2(tile.x * definition.NoiseSettings.scaleOffset.x, -tile.y * definition.NoiseSettings.scaleOffset.y);
+
+            definition.NoiseSettings.positionOffset = noiseSpaceOffset;
+            
+            noiseTexture.GenerateNoiseForChanelAsync(definition.NoiseSettings, NoiseTextureChannel.RED, transform, onCompleted );
+
+            definition.NoiseSettings.positionOffset = cachedPositionOffset;
+
+            return noiseTexture;
+        }
+        
+        public TerrainMeshData GenerateTerrainMesh(NoiseTexture NoiseTexture, int lod)
         {
             int width = TerrainDefinition.MAP_CHUNK_SIZE;
             int height = TerrainDefinition.MAP_CHUNK_SIZE;
@@ -102,7 +127,7 @@ namespace Procedural
                 {
                     lock (definition.HeightCurve)
                     {
-                        float currentHeight = definition.HeightCurve.Evaluate(terrainHeightMap[x, y]) * definition.HeightRange;
+                        float currentHeight = definition.HeightCurve.Evaluate(NoiseTexture[x+ height*y].r) * definition.HeightRange;
                         meshData.vertices[vertexIndex] = new Vector3(topLeftCornerX + x, currentHeight, topLeftCornerZ - y) + definition.TerrainOffset;
                     }
 
@@ -122,7 +147,7 @@ namespace Procedural
             return meshData;
         }
 
-        public Texture2D GenerateTerrainTexture(float[,] terrainHeightMap)
+        public Texture2D GenerateTerrainTexture(NoiseTexture noiseTexture)
         {
             int width = TerrainDefinition.MAP_CHUNK_SIZE;
             int height = TerrainDefinition.MAP_CHUNK_SIZE;
@@ -144,13 +169,13 @@ namespace Procedural
                 {
                     for (int i = 0; i < definition.TerrainLayers.Length; i++)
                     {
-                        if (terrainHeightMap[x, y] >= definition.TerrainLayers[i].height)
+                        if (noiseTexture[x + height*y].r >= definition.TerrainLayers[i].height)
                         {
                             TerrainLayer downLayer = definition.TerrainLayers[i];
                             TerrainLayer upLayer = i == definition.TerrainLayers.Length - 1  ? topTerrainLayer : definition.TerrainLayers[i + 1];
                             
                             float layerHeight = upLayer.height - downLayer.height;
-                            float positionOnLayer = terrainHeightMap[x, y] - downLayer.height;
+                            float positionOnLayer = noiseTexture[x + height*y].r - downLayer.height;
                             float currentLayerPositionRatio = positionOnLayer / layerHeight;
                             
                             Color blendedColor = Color.Lerp(downLayer.terrainColor,upLayer.terrainColor, currentLayerPositionRatio);

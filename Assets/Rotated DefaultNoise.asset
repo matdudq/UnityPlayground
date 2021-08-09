@@ -18,18 +18,18 @@ MonoBehaviour:
   filterMode: 2
   redChannelNoiseSettings:
     noiseType: 2
-    positionOffset: {x: 3.5, y: 3.5, z: 3.5}
+    positionOffset: {x: 29.5, y: 29.5, z: 29.5}
     rotationOffset: {x: 45, y: 45, z: 45}
-    scaleOffset: {x: 7, y: 7, z: 7}
-    tillingPeriod: 7
+    scaleOffset: {x: 59, y: 59, z: 59}
+    tillingPeriod: 59
     tillingEnabled: 1
     dimensions: 2
-    octaves: 5
+    octaves: 3
     lacunarity: 3.12
     persistence: 0
     woodPatternMultiplier: 1
     turbulenceEnabled: 0
-    falloffEnabled: 1
+    falloffEnabled: 0
     falloffShift: 2.35
     falloffDensity: 1.05
   greenChannelNoiseSettings:
