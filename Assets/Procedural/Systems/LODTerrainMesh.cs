@@ -28,14 +28,14 @@ namespace Procedural
             public void RequestTerrainMesh()
             {
                 hasRequestedMesh = true;
-                TerrainGenerator.Instance.RequestTerrain(lod, tilePosition, OnTerrainMeshReceived);
+                TerrainGenerator.Instance.RequestTerrainByJob(lod, tilePosition, OnTerrainMeshReceived);
             }
             
             private void OnTerrainMeshReceived(TerrainData terrainMeshData)
             {
                 hasMesh = true;
-                mesh = terrainMeshData.GenerateTerrainMesh();
-                texture2D = terrainMeshData.GenerateTerrainTexture();
+                mesh = terrainMeshData.mesh;
+                texture2D = terrainMeshData.texture;
                 meshReceivedCallback?.Invoke();
             }
         }

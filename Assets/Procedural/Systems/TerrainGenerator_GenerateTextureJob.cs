@@ -8,27 +8,27 @@ namespace Procedural
     {
         private struct GenerateTextureJob : IJobParallelFor
         {
-            public int width;
-            public int height;
-
+            [ReadOnly]
             public TerrainLayer topTerrainLayer;
-            
+            [ReadOnly]
             public NativeArray<TerrainLayer> terrainLayers;
-            public NativeArray<Color> noiseTexture;
+            [ReadOnly]
+            public NativeArray<Color> noiseMap;
             
+            [WriteOnly]
             public NativeArray<Color32> textureArray;
             
             public void Execute(int index)
             {
                 for (int i = 0; i < terrainLayers.Length; i++)
                 {
-                    if (noiseTexture[index].r >= terrainLayers[i].height)
+                    if (noiseMap[index].r >= terrainLayers[i].height)
                     {
                         TerrainLayer downLayer = terrainLayers[i];
                         TerrainLayer upLayer = i == terrainLayers.Length - 1  ? topTerrainLayer : terrainLayers[i + 1];
                             
                         float layerHeight = upLayer.height - downLayer.height;
-                        float positionOnLayer = noiseTexture[index].r - downLayer.height;
+                        float positionOnLayer = noiseMap[index].r - downLayer.height;
                         float currentLayerPositionRatio = positionOnLayer / layerHeight;
                             
                         Color blendedColor = Color.Lerp(downLayer.terrainColor,upLayer.terrainColor, currentLayerPositionRatio);

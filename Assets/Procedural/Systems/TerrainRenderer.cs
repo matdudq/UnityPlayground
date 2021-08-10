@@ -11,9 +11,9 @@ namespace Procedural
         [SerializeField] 
         private MeshRenderer terrainRenderer = null;
         
-        public void DisplayMesh(TerrainMeshData meshData, Texture2D texture, float size)
+        public void DisplayMesh(Mesh meshData, Texture2D texture, float size)
         {
-            terrainFilter.sharedMesh = meshData.CreateMesh();
+            terrainFilter.sharedMesh = meshData;
             terrainRenderer.sharedMaterial.mainTexture = texture;
 
             transform.localScale = Vector3.one * size;
