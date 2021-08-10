@@ -6,7 +6,11 @@ namespace Procedural
     [Serializable]
     public struct TerrainLayer
     {
-        public float height;
-        public Color terrainColor;
+		#region Variables
+
+		public float height;
+		public Color terrainColor;
+
+		#endregion Variables
     }
 }

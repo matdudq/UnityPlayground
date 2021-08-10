@@ -5,6 +5,8 @@ namespace Procedural
 {
     public partial class EndlessTerrain : MonoBehaviour
     {
+        #region Variables
+
         [SerializeField] 
         private LODInfo[] lods = null;
         
@@ -22,8 +24,13 @@ namespace Procedural
         private int visibleChunksCount = 1;
 
         private Dictionary<Vector2Int, TerrainChunk> chunkCoordToTerrain = null;
-        private List<TerrainChunk> lastUpdateVisibleTerrainChunks = null;
         
+        private List<TerrainChunk> lastUpdateVisibleTerrainChunks = null;
+
+        #endregion Variables
+
+        #region Properties
+
         private int ChunkSize
         {
             get
@@ -47,7 +54,11 @@ namespace Procedural
                 return lods[lods.Length - 1].distanceThreshold;
             }
         }
-        
+
+        #endregion Properties
+
+        #region Unity Methods
+
         private void Start()
         {
             Initialize();
@@ -61,7 +72,11 @@ namespace Procedural
                 UpdateVisibleChunks();
             }
         }
-        
+
+        #endregion Unity Methods
+
+        #region Private Methods
+
         private void Initialize()
         {
             chunkCoordToTerrain = new Dictionary<Vector2Int, TerrainChunk>();
@@ -78,9 +93,8 @@ namespace Procedural
             
             lastUpdateVisibleTerrainChunks.Clear();
 
-            Vector2Int currentChunkCoords = new Vector2Int(
-                Mathf.RoundToInt(ObserverPositionXZ.x / ChunkSize),
-                Mathf.RoundToInt(ObserverPositionXZ.y / ChunkSize));
+            Vector2Int currentChunkCoords = new Vector2Int(Mathf.RoundToInt(ObserverPositionXZ.x / ChunkSize),
+                                                           Mathf.RoundToInt(ObserverPositionXZ.y / ChunkSize));
 
             for (int y = -visibleChunksCount; y <= visibleChunksCount; y++)
             {
@@ -104,8 +118,8 @@ namespace Procedural
                     }
                 }
             }
-            
-            
         }
+
+        #endregion Private Methods
     }
 }

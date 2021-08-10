@@ -11,6 +11,8 @@ namespace Procedural
 		[BurstCompile]
 		private struct GenerateMeshJob : IJobParallelFor
 		{
+			#region Variables
+
 			[ReadOnly]
 			public int fullMeshResolution;
 			[ReadOnly]
@@ -19,27 +21,31 @@ namespace Procedural
 			public float3 meshOffset;
 			[ReadOnly]
 			public float heightRange;
-			
 			[ReadOnly]
 			public NativeArray<Color> noiseMap;
-            
+			
 			[WriteOnly]
 			public NativeArray<float3> vertices;
-            
 			[WriteOnly]
 			public NativeArray<float2> uvs;
-			
 			[WriteOnly]
 			public NativeArray<int> triangles;
 			
+			#endregion Variables
+
+			#region Public methods
+
 			public void Execute(int index)
 			{
 				int indexModulo = index % 6;
 
 				int quadIndex = (int)math.floor(index / 6.0f);
 				
+				//Calculating current stripe - row of quads.
+				//Last row of vertices should be missed, we don't create triangles for them.
 				int stripeIndex = (int)math.floor(quadIndex / (float)(simplifiedMeshResolution-1));
 				
+				//Converting triangle index to vertex index.
 				int vertexIndex = -1;
 				
 				switch (indexModulo)
@@ -64,6 +70,7 @@ namespace Procedural
 						break;
 				}
 				
+				//Converting current vertex index into x/y indexed-space.
 				int x = vertexIndex % simplifiedMeshResolution;
 				int y = (int) math.floor(vertexIndex / (float) simplifiedMeshResolution);
 
@@ -81,6 +88,8 @@ namespace Procedural
 				
 				triangles[index] = index;
 			}
+
+			#endregion Public methods
 		}
 	}
 }

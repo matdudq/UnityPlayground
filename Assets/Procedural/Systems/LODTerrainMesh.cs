@@ -5,8 +5,10 @@ namespace Procedural
 {
     public partial class EndlessTerrain
     {
-        private class LODTerrainMesh
+        private class LODTerrainData
         {
+            #region Variables
+
             public int lod = 0;
             public Vector2 tilePosition = Vector2.zero;
             
@@ -16,28 +18,46 @@ namespace Procedural
             public bool hasRequestedMesh = false;
             public bool hasMesh = false;
 
+            #endregion Variables
+
+            #region Events
+
             private event Action meshReceivedCallback = null;
-            
-            public LODTerrainMesh(int lod, Vector2 tilePosition, Action meshReceivedCallback = null)
+
+            #endregion Events
+
+            #region Constructor
+
+            public LODTerrainData(int lod, Vector2 tilePosition, Action meshReceivedCallback = null)
             {
                 this.lod = lod;
                 this.meshReceivedCallback = meshReceivedCallback;
                 this.tilePosition = tilePosition;
             }
 
+            #endregion Constructor
+
+            #region Public methods
+
             public void RequestTerrainMesh()
             {
                 hasRequestedMesh = true;
                 TerrainGenerator.Instance.RequestTerrainByJob(lod, tilePosition, OnTerrainMeshReceived);
             }
-            
-            private void OnTerrainMeshReceived(TerrainData terrainMeshData)
+
+            #endregion Public methods
+
+            #region Private methods
+
+            private void OnTerrainMeshReceived(RequestedTerrainData requestedTerrainMeshData)
             {
                 hasMesh = true;
-                mesh = terrainMeshData.mesh;
-                texture2D = terrainMeshData.texture;
+                mesh = requestedTerrainMeshData.mesh;
+                texture2D = requestedTerrainMeshData.texture;
                 meshReceivedCallback?.Invoke();
             }
+
+            #endregion Private methods
         }
     }
     

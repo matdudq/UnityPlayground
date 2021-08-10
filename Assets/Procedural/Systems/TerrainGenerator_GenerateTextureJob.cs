@@ -10,6 +10,8 @@ namespace Procedural
         [BurstCompile]
         private struct GenerateTextureJob : IJobParallelFor
         {
+            #region Variables
+
             [ReadOnly]
             public TerrainLayer topTerrainLayer;
             [ReadOnly]
@@ -19,7 +21,11 @@ namespace Procedural
             
             [WriteOnly]
             public NativeArray<Color32> textureArray;
-            
+
+            #endregion Variables
+
+            #region Public Methods
+
             public void Execute(int index)
             {
                 for (int i = 0; i < terrainLayers.Length; i++)
@@ -42,6 +48,8 @@ namespace Procedural
                     }
                 }
             }
+
+            #endregion Public Methods
         }
     }
 }

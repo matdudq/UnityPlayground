@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f673c7e9f4a4b8b85c7af1cf29769ae, type: 3}
-  m_Name: Test Terrain
+  m_Name: Art Referenced Terrain
   m_EditorClassIdentifier: 
   terrainLayers:
   - height: 0
@@ -27,7 +27,7 @@ MonoBehaviour:
     terrainColor: {r: 0.39607847, g: 0.6431373, b: 0.37254903, a: 1}
   noiseSettings:
     noiseType: 2
-    positionOffset: {x: 0, y: -0, z: 0}
+    positionOffset: {x: 0, y: 0, z: 0}
     rotationOffset: {x: 0, y: 0, z: 0}
     scaleOffset: {x: 4, y: 4, z: 4}
     tillingPeriod: 44
@@ -39,10 +39,9 @@ MonoBehaviour:
     woodPatternMultiplier: 1
     turbulenceEnabled: 0
     falloffEnabled: 0
-    falloffShift: 4.49
+    falloffShift: 5.29
     falloffDensity: 2.13
   levelOfDetails: 0
-  chunkSize: 1
   heightRange: 30
   heightCurve:
     serializedVersion: 2

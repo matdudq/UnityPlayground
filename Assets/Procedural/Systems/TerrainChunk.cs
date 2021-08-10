@@ -6,24 +6,20 @@ namespace Procedural
 	{
 		private class TerrainChunk
 		{
+			#region Variables
+
 			private EndlessTerrain chunkOwner = null;
 
 			private TerrainChunkRenderer chunkRenderer = null;
 			
-			private Vector2 position = Vector2.zero;
-			
-			private LODTerrainMesh[] lodMeshes;
+			private LODTerrainData[] lodMeshes;
 
 			private int previousLOD = -1;
-			
-			private static TerrainGenerator TerrainGenerator
-			{
-				get
-				{
-					return TerrainGenerator.Instance;
-				}
-			}
 
+			#endregion Variables
+
+			#region Properties
+			
 			private float MaxViewDistance
 			{
 				get
@@ -47,23 +43,31 @@ namespace Procedural
 					return chunkOwner.lods;
 				}
 			}
-			
+
+			#endregion Properties
+
+			#region Constructor
+
 			public TerrainChunk(TerrainChunkRenderer chunkRenderer, EndlessTerrain chunkOwner)
 			{
 				this.chunkRenderer = chunkRenderer;
 
 				this.chunkOwner = chunkOwner;
 				
-				lodMeshes = new LODTerrainMesh[LODs.Length];
+				lodMeshes = new LODTerrainData[LODs.Length];
 
 				for (int i = 0; i < lodMeshes.Length; i++)
 				{
-					lodMeshes[i] = new LODTerrainMesh(LODs[i].lodLevel, chunkRenderer.Coords, UpdateVisibility);
+					lodMeshes[i] = new LODTerrainData(LODs[i].lodLevel, chunkRenderer.Coords, UpdateVisibility);
 				}
 				
 				UpdateVisibility();
 			}
 			
+			#endregion Constructor
+
+			#region Public methods
+
 			public void UpdateVisibility()
 			{
 				float boundsToObserver = chunkRenderer.BoundsToPositionDistance(ObserverPositionXZ);
@@ -86,15 +90,15 @@ namespace Procedural
 
 					if (previousLOD != lodIndex)
 					{
-						LODTerrainMesh lodTerrainMesh = lodMeshes[lodIndex];
-						if (lodTerrainMesh.hasMesh)
+						LODTerrainData lodTerrainData = lodMeshes[lodIndex];
+						if (lodTerrainData.hasMesh)
 						{
-							chunkRenderer.SetMesh(lodTerrainMesh.mesh);
-							chunkRenderer.SetTexture(lodTerrainMesh.texture2D);
+							chunkRenderer.SetMesh(lodTerrainData.mesh);
+							chunkRenderer.SetTexture(lodTerrainData.texture2D);
 						}
-						else if (!lodTerrainMesh.hasRequestedMesh)
+						else if (!lodTerrainData.hasRequestedMesh)
 						{
-							lodTerrainMesh.RequestTerrainMesh();
+							lodTerrainData.RequestTerrainMesh();
 						}
 					}
 					
@@ -108,6 +112,8 @@ namespace Procedural
 			{
 				chunkRenderer.SetVisible(enabled);
 			}
+
+			#endregion Public methods
 		}
 	}
 }

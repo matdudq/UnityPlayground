@@ -10,16 +10,22 @@ namespace Procedural
         [CustomEditor(typeof(TerrainGenerator))]
         private class TerrainGeneratorEditor : Editor
         {
+            #region Variables
+
             private TerrainGenerator terrainGenerator = null;
             
-            private GUIContent buttonTitleGC = null;
+            private GUIContent buttonTitleGC      = null;
             private GUIContent autoUpdateToogleGC = null;
             
             private SerializedProperty terrainPreviewDefinitionSP = null;
 
-            private Editor terrainPreviewDefinitionEditor  = null;
+            private Editor terrainPreviewDefinitionEditor = null;
 
             private bool autoUpdate = true;
+
+            #endregion Variables
+
+            #region Properties
 
             public Editor TerrainPreviewDefinitionEditor
             {
@@ -33,6 +39,10 @@ namespace Procedural
                     return terrainPreviewDefinitionEditor;
                 }
             }
+
+            #endregion Properties
+
+            #region Unity Editor Methods
 
             private void OnEnable()
             {
@@ -72,6 +82,8 @@ namespace Procedural
                     terrainGenerator.GenerateAndDisplayTerrain();
                 }
             }
+
+            #endregion Unity Editor Methods
         }
     }
 }

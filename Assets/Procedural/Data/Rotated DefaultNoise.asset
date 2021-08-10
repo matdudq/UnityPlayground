@@ -18,10 +18,10 @@ MonoBehaviour:
   filterMode: 2
   redChannelNoiseSettings:
     noiseType: 2
-    positionOffset: {x: 29.5, y: 29.5, z: 29.5}
+    positionOffset: {x: 44.5, y: 44.5, z: 44.5}
     rotationOffset: {x: 45, y: 45, z: 45}
-    scaleOffset: {x: 59, y: 59, z: 59}
-    tillingPeriod: 59
+    scaleOffset: {x: 89, y: 89, z: 89}
+    tillingPeriod: 89
     tillingEnabled: 1
     dimensions: 2
     octaves: 3
@@ -50,10 +50,10 @@ MonoBehaviour:
     falloffDensity: 2.2
   blueChannelNoiseSettings:
     noiseType: 0
-    positionOffset: {x: 0, y: 0, z: 0}
+    positionOffset: {x: 34, y: 34, z: 34}
     rotationOffset: {x: 0, y: 0, z: 0}
-    scaleOffset: {x: 1, y: 1, z: 1}
-    tillingPeriod: 10
+    scaleOffset: {x: 68, y: 68, z: 68}
+    tillingPeriod: 68
     tillingEnabled: 0
     dimensions: 3
     octaves: 1

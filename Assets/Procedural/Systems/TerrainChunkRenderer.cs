@@ -4,6 +4,8 @@ namespace Procedural
 {
 	public class TerrainChunkRenderer : MonoBehaviour
 	{
+		#region Variables
+
 		[SerializeField]
 		private MeshRenderer meshRenderer = null;
 
@@ -14,6 +16,10 @@ namespace Procedural
 		
 		private Vector2 coords = Vector2.zero;
 
+		#endregion Variables
+
+		#region Properties
+
 		public Vector2 Coords
 		{
 			get
@@ -21,7 +27,11 @@ namespace Procedural
 				return coords;
 			}
 		}
-		
+
+		#endregion Properties
+
+		#region Public methods
+
 		public void SetVisible(bool visible)
 		{
 			gameObject.SetActive(visible);
@@ -54,5 +64,7 @@ namespace Procedural
 		{
 			return Mathf.Sqrt(bounds.SqrDistance(position));
 		}
+
+		#endregion Public methods
 	}
 }
