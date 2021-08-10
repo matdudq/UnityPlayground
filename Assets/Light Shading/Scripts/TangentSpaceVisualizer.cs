@@ -10,12 +10,14 @@ public class TangentSpaceVisualizer : MonoBehaviour
 			Mesh mesh = meshFilter.sharedMesh;
 			if (mesh)
 			{
-				for (int i = 0; i < mesh.vertexCount; i++)
+				for (int i = firstIndex; i < firstIndex + 50; i++)
 				{
-					ShowTangentSpace(transform.TransformPoint(mesh.vertices[i]),
-									 transform.TransformDirection(mesh.normals[i]),
-									 transform.TransformDirection(mesh.tangents[i]),
-									 mesh.tangents[i].w);
+					ShowTangentSpace(transform.TransformPoint(mesh.vertices[i]), transform.TransformDirection(mesh.normals[i]),i);
+				}
+				
+				for (int i = secondIndex; i < secondIndex + 50; i++)
+				{
+					ShowTangentSpace(transform.TransformPoint(mesh.vertices[i]), transform.TransformDirection(mesh.normals[i]),i);
 				}
 			}
 		}
@@ -23,15 +25,36 @@ public class TangentSpaceVisualizer : MonoBehaviour
 
 	public float scale = 0.1f;
 	public float vertexOffset = 0.01f;
-	
-	private void ShowTangentSpace(Vector3 vertex, Vector3 normal, Vector3 tangent, float bitangentSign)
+	public int firstIndex = 0;
+	public int secondIndex = 0;
+	private void ShowTangentSpace(Vector3 vertex, Vector3 normal, int index)
 	{
+		int moduloIndex = index % 6;
+		
 		vertex += normal * vertexOffset;
-		Gizmos.color = Color.green;
+
+		switch (moduloIndex)
+		{
+			case 0:
+			Gizmos.color = Color.green;
+			break;
+			case 1:
+				Gizmos.color = Color.red;
+				break;
+			case 2:
+				Gizmos.color = Color.black;
+				break;
+			case 3:
+				Gizmos.color = Color.blue;
+				break;
+			case 4:
+				Gizmos.color = Color.yellow;
+				break;
+			case 5:
+				Gizmos.color = Color.magenta;
+				break;
+		}
+		
 		Gizmos.DrawLine(vertex, vertex + normal*scale);
-		Gizmos.color = Color.red;
-		Gizmos.DrawLine(vertex, vertex+tangent*scale);
-		Gizmos.color = Color.blue;
-		Gizmos.DrawLine(vertex,vertex + Vector3.Cross(normal,tangent) * bitangentSign * scale);
 	}
 }
