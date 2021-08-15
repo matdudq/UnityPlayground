@@ -6,19 +6,55 @@ namespace Procedural
 	{
 		#region Variables
 
-		public readonly Mesh mesh = null;
-		public readonly Texture2D texture = null;
+		private Mesh mesh = null;
+		private Texture2D texture = null;
 
 		#endregion Variables
 
-		#region Constructor
+		#region Properties
 
-		public RequestedTerrainData(Mesh mesh, Texture2D texture)
+		public Mesh Mesh
 		{
-			this.mesh = mesh;
-			this.texture = texture;
+			get
+			{
+				return mesh;
+			}
 		}
 
-		#endregion Constructor
+		public Texture2D Texture
+		{
+			get
+			{
+				return texture;
+			}
+		}
+
+		public bool IsMeshDefined
+		{
+			get
+			{
+				return mesh != null;
+			}
+		}
+		
+		public bool IsTextureDefined
+		{
+			get
+			{
+				return texture != null;
+			}
+		}
+		
+		#endregion Propertiess
+		
+		public void SetMesh(Mesh mesh)
+		{
+			this.mesh = mesh;
+		}
+
+		public void SetTexture(Texture2D texture)
+		{
+			this.texture = texture;
+		}
 	}
 }

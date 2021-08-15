@@ -52,8 +52,8 @@ namespace Procedural
             private void OnTerrainMeshReceived(RequestedTerrainData requestedTerrainMeshData)
             {
                 hasMesh = true;
-                mesh = requestedTerrainMeshData.mesh;
-                texture2D = requestedTerrainMeshData.texture;
+                mesh = requestedTerrainMeshData.Mesh;
+                texture2D = requestedTerrainMeshData.Texture;
                 meshReceivedCallback?.Invoke();
             }
 

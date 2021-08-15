@@ -6,10 +6,10 @@ using UnityEngine;
 
 namespace Procedural
 {
-	public partial class TerrainGenerator
-	{
-		[BurstCompile]
-		private struct GenerateMeshJob : IJobParallelFor
+    public partial class TerrainMeshJobManager
+    {
+        [BurstCompile]
+		private struct TerrainMeshJob : IJobParallelFor
 		{
 			#region Variables
 
@@ -23,14 +23,18 @@ namespace Procedural
 			public float heightRange;
 			[ReadOnly]
 			public NativeArray<Color> noiseMap;
-			
+			[ReadOnly]
+			public NativeArray<float> heightCurve;
+
 			[WriteOnly]
 			public NativeArray<float3> vertices;
 			[WriteOnly]
 			public NativeArray<float2> uvs;
 			[WriteOnly]
 			public NativeArray<int> triangles;
-			
+
+			public const int CURVE_SAMPLING_FREQUENCY = 256;
+
 			#endregion Variables
 
 			#region Public methods
@@ -79,10 +83,13 @@ namespace Procedural
 				
 				float topLeftCornerX = (fullMeshResolution - 1) / -2f;
 				float topLeftCornerZ = (fullMeshResolution - 1) / 2f;
+
+				float heightRatio = noiseMap[x + simplifiedMeshResolution * y].r;
+				float curvedHeightRatio = heightCurve[(int) (heightRatio*CURVE_SAMPLING_FREQUENCY)];
+				
+				float height = curvedHeightRatio * heightRange;
                 
-				float currentHeight = noiseMap[x + simplifiedMeshResolution * y].r * heightRange;
-                
-				vertices[index] = new float3(topLeftCornerX + xRatio * fullMeshResolution, currentHeight, topLeftCornerZ - yRatio * fullMeshResolution) + meshOffset;
+				vertices[index] = new float3(topLeftCornerX + xRatio * fullMeshResolution, height, topLeftCornerZ - yRatio * fullMeshResolution) + meshOffset;
                 
 				uvs[index] = new float2(xRatio, yRatio);
 				
@@ -91,5 +98,5 @@ namespace Procedural
 
 			#endregion Public methods
 		}
-	}
+    }
 }

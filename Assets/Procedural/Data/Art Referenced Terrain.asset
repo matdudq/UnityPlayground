@@ -42,24 +42,33 @@ MonoBehaviour:
     falloffShift: 5.29
     falloffDensity: 2.13
   levelOfDetails: 0
-  heightRange: 30
+  heightRange: 30.49
   heightCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0.9422448
-      outSlope: 0.9422448
+      inSlope: 0.6153174
+      outSlope: 0.6153174
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
+      time: 0.75999165
+      value: 0.46763608
+      inSlope: 2.284049
+      outSlope: 2.284049
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
       time: 0.8425225
       value: 0.79386246
-      inSlope: 1.1256208
-      outSlope: 1.1256208
+      inSlope: 2.6308887
+      outSlope: 2.6308887
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
