@@ -7,7 +7,7 @@ namespace Procedural
 {
     public partial class TerrainTextureJobManager
     {
-        [BurstCompile]
+        [BurstCompile(DisableSafetyChecks = true)]
         private struct TerrainTextureJob : IJobParallelFor
         {
             #region Variables

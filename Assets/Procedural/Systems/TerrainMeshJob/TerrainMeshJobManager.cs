@@ -55,6 +55,8 @@ namespace Procedural
                 triangles = triangles
             };
 
+            terrainMeshJob.Initialize();
+            
             int jobIterations = (simplifiedMeshResolution - 1) * (simplifiedMeshResolution - 1) * 6;
 
             JobHandle generateMeshJobHandle = terrainMeshJob.Schedule(jobIterations, meshSize / 6, dependency);
@@ -71,6 +73,8 @@ namespace Procedural
                 
                 onCompleted?.Invoke(ConstructMesh(vertices, uvs, triangles));
 
+                terrainMeshJob.Dispose();
+                
                 sampledCurve.Dispose();
                 vertices.Dispose();
                 uvs.Dispose();
