@@ -1,6 +1,4 @@
-﻿using DudeiNoise;
-using DudeiNoise.Editor;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace Procedural
