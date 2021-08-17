@@ -5,10 +5,10 @@ using UnityEngine;
 
 namespace Procedural
 {
-    public partial class TerrainGenerator
+    public partial class TerrainTextureJobManager
     {
-        [BurstCompile]
-        private struct GenerateTextureJob : IJobParallelFor
+        [BurstCompile(DisableSafetyChecks = true)]
+        private struct TerrainTextureJob : IJobParallelFor
         {
             #region Variables
 
@@ -50,6 +50,6 @@ namespace Procedural
             }
 
             #endregion Public Methods
-        }
+        } 
     }
 }

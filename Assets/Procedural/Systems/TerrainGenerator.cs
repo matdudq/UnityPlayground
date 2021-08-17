@@ -1,10 +1,6 @@
 using System;
-using System.Collections;
-using System.Linq;
 using DudeiNoise;
 using Unity.Collections;
-using Unity.Jobs;
-using Unity.Mathematics;
 using UnityEngine;
 using Utilities;
 
@@ -21,9 +17,13 @@ namespace Procedural
         [SerializeField, Tooltip("Component which displays preview in edit mode.")]
         private TerrainPreview terrainPreview = null;
         #endif
+
+        private TerrainMeshJobManager terrainMeshJobManager = null;
+
+        private TerrainTextureJobManager terrainTextureJobManager = null;
         
         #endregion Variables
-
+        
         #region Public methods
 
         public void RequestTerrainByJob(int lod, Vector2 tile, Action<RequestedTerrainData> onRequest = null)
@@ -32,7 +32,7 @@ namespace Procedural
             
             void OnGenerateHeightMapCompleted(NoiseTexture heightMap)
             {
-                GenerateMeshAndTexture(lod, heightMap, onRequest);
+                GenerateTerrainData(lod, heightMap, onRequest);
             }
         }
 
@@ -40,128 +40,91 @@ namespace Procedural
 
         #region Private methods
 
-        private void GenerateMeshAndTexture(int lod, NoiseTexture noiseTexture, Action<RequestedTerrainData> onRequest = null)
+        private void GenerateTerrainData(int lod, NoiseTexture noiseTexture, Action<RequestedTerrainData> onRequest = null)
         {
-            StartCoroutine(GenerateMeshAndTextureProcess());
+            ValidateManagers();
             
-            IEnumerator GenerateMeshAndTextureProcess()
+            RequestedTerrainData createdTerrainData = new RequestedTerrainData();
+            
+            int simplifiedTerrainResolution = GetSimplifiedTerrainResolution(TerrainDefinition.MAP_CHUNK_SIZE, lod);
+            NativeArray<Color> noiseMap = noiseTexture.Texture.GetRawTextureData<Color>();
+            
+            //MESH
+            TerrainMeshJobSettings terrainMeshJobSettings = new TerrainMeshJobSettings()
             {
-                NativeArray<Color> noiseMap = noiseTexture.Texture.GetRawTextureData<Color>();
-
-                JobHandle meshJobHandle = GenerateTerrainMesh(lod, 
-                                                                 noiseMap,
-                                                                 out NativeArray<float3> vertices,
-                                                                 out NativeArray<float2> uvs,
-                                                                 out NativeArray<int> triangles);
-
-                int textureResolution = GetSimplifiedMeshResolution(TerrainDefinition.MAP_CHUNK_SIZE, lod);
-
-                Texture2D meshTexture = new Texture2D(textureResolution, textureResolution, TextureFormat.RGBA32, false);
-                meshTexture.filterMode = FilterMode.Point;
-                meshTexture.wrapMode = TextureWrapMode.Clamp;
+                simplifiedMeshResolution = simplifiedTerrainResolution,
+                fullMeshResolution = TerrainDefinition.MAP_CHUNK_SIZE,
+                heightRange = definition.HeightRange,
+                meshOffset = definition.TerrainOffset,
+                heightCurve = definition.HeightCurve,
+                noiseMap = noiseMap
+            };
+            
+            terrainMeshJobManager.Generate(terrainMeshJobSettings,default, OnGenerateTerrainMeshCompleted);
+            
+            //TEXTURE
+            TerrainTextureJobSettings terrainTextureJobSettings = new TerrainTextureJobSettings()
+            {
+                simplifiedTerrainResolution = simplifiedTerrainResolution,
+                terrainLayers = definition.TerrainLayers,
+                noiseMap =  noiseMap
+            };
+            
+            terrainTextureJobManager.Generate(terrainTextureJobSettings,default, OnGenerateTerrainTextureCompleted);
+            
+            void OnGenerateTerrainMeshCompleted(Mesh mesh)
+            {
+                createdTerrainData.SetMesh(mesh);
                 
-                NativeArray<TerrainLayer> terrainLayers = new NativeArray<TerrainLayer>(definition.TerrainLayers,Allocator.TempJob);
-
-                Coroutine textureJobCourutine = GenerateMeshTexture(meshTexture, noiseMap, terrainLayers, meshJobHandle);
+                if (createdTerrainData.IsTextureDefined)
+                {
+                    onRequest?.Invoke(createdTerrainData);
+                }
+            }
+            
+            void OnGenerateTerrainTextureCompleted(Texture2D texture)
+            {
+                createdTerrainData.SetTexture(texture);
                 
-                yield return textureJobCourutine;
-                
-                meshTexture.Apply();
-
-                Mesh terrainMesh = ConstructMesh(vertices, uvs, triangles);
-
-                terrainLayers.Dispose();
-                vertices.Dispose();
-                uvs.Dispose();
-                triangles.Dispose();
-                
-                onRequest?.Invoke(new RequestedTerrainData(terrainMesh, meshTexture));
+                if (createdTerrainData.IsMeshDefined)
+                {
+                    onRequest?.Invoke(createdTerrainData);
+                }
             }
         }
         
         private void GenerateHeightMapForOrigin(Vector2 tile, int lod, Action<NoiseTexture> onCompleted)
         {
-            NoiseTexture noiseTexture = new NoiseTexture(GetSimplifiedMeshResolution(TerrainDefinition.MAP_CHUNK_SIZE, lod));
+            NoiseTexture noiseTexture = new NoiseTexture(GetSimplifiedTerrainResolution(TerrainDefinition.MAP_CHUNK_SIZE, lod));
             
             Vector2 noiseSpaceOffset = new Vector2(tile.x * definition.NoiseSettings.scaleOffset.x, -tile.y * definition.NoiseSettings.scaleOffset.y);
-        
-            definition.NoiseSettings.positionOffset = noiseSpaceOffset;
-            
-            noiseTexture.GenerateNoiseForChanelAsync(definition.NoiseSettings, NoiseTextureChannel.RED, transform, onCompleted);
-        }
-        
-        private Coroutine GenerateMeshTexture(Texture2D meshTexture, NativeArray<Color> noiseMap, NativeArray<TerrainLayer> layers, JobHandle dependsOn)
-        {
-            TerrainLayer topTerrainLayer = new TerrainLayer()
-            {
-                height = 1.0f,
-                terrainColor = definition.TerrainLayers.Last().terrainColor
-            };
-            
-            NativeArray<Color32> textureArray = meshTexture.GetRawTextureData<Color32>();
-            
-            int meshSize = textureArray.Length;
 
-            GenerateTextureJob generateTextureJob = new GenerateTextureJob()
-            {
-                topTerrainLayer = topTerrainLayer,
-                noiseMap = noiseMap,
-                terrainLayers = layers,
-                textureArray = textureArray
-            };
+            NoiseSettings currentSettings = definition.NoiseSettings.Copy();
             
-            return generateTextureJob.ScheduleCoroutine(meshSize, meshSize / 6, this);
-        }
-        
-        private JobHandle GenerateTerrainMesh(int lod, NativeArray<Color>noiseMap, out NativeArray<float3> vertices, out NativeArray<float2> uvs, out NativeArray<int> triangles)
-        {
-            int fullMeshResolution = TerrainDefinition.MAP_CHUNK_SIZE;
-            int meshSize = fullMeshResolution * fullMeshResolution;
-            int simplifiedMeshResolution = GetSimplifiedMeshResolution(fullMeshResolution, lod);
-
-            float heightRange = definition.HeightRange;
-            float3 meshOffset = definition.TerrainOffset;
-            int trianglesCount = simplifiedMeshResolution * simplifiedMeshResolution * 6;
-               
-            vertices = new NativeArray<float3>(trianglesCount, Allocator.TempJob);
-            uvs = new NativeArray<float2>(trianglesCount, Allocator.TempJob);
-            triangles = new NativeArray<int>(trianglesCount, Allocator.TempJob);
+            currentSettings.positionOffset = noiseSpaceOffset;
             
-            GenerateMeshJob generateVerticesJob = new GenerateMeshJob()
-            {
-                fullMeshResolution = fullMeshResolution,
-                simplifiedMeshResolution = simplifiedMeshResolution,
-                meshOffset = meshOffset,
-                heightRange = heightRange,
-                noiseMap = noiseMap,
-                vertices = vertices,
-                uvs = uvs,
-                triangles = triangles
-            };
-
-            int jobIterations = (simplifiedMeshResolution - 1) * (simplifiedMeshResolution - 1) * 6;
-
-            return generateVerticesJob.ScheduleAsync(jobIterations, meshSize / 6, this);
-        }
-        
-        private Mesh ConstructMesh(NativeArray<float3> vertices, NativeArray<float2> uvs, NativeArray<int> triangles)
-        {
-            Mesh mesh = new Mesh();
-
-            mesh.SetVertices(vertices);
-            mesh.SetIndices(triangles,MeshTopology.Triangles,0);
-            mesh.SetUVs(0,uvs);
-            
-            mesh.RecalculateNormals();
-            return mesh;
+            noiseTexture.GenerateNoiseForChanelAsync(currentSettings, NoiseTextureChannel.RED, this, onCompleted);
         }
 
-        private int GetSimplifiedMeshResolution(int fullMeshResolution, int lod)
+        private int GetSimplifiedTerrainResolution(int fullMeshResolution, int lod)
         {
             int meshSimplificationStep = lod == 0 ? 1 : lod * 2;
             return (fullMeshResolution - 1) / meshSimplificationStep + 1;
         }
 
+        private void ValidateManagers()
+        {
+            if (terrainMeshJobManager == null)
+            {
+                terrainMeshJobManager = new TerrainMeshJobManager(this);
+            }
+
+            if (terrainTextureJobManager == null)
+            {
+                terrainTextureJobManager = new TerrainTextureJobManager(this);
+            }
+        }
+        
         #endregion Private methods
         
         #region Editor
@@ -179,7 +142,7 @@ namespace Procedural
             
             void OnTerrainGenerated(RequestedTerrainData terrainData)
             {
-                terrainPreview.DisplayMesh(terrainData.mesh, terrainData.texture);
+                terrainPreview.DisplayMesh(terrainData.Mesh, terrainData.Texture);
             }
         }
 
