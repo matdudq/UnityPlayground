@@ -103,7 +103,7 @@ namespace Procedural
             
             currentSettings.positionOffset = noiseSpaceOffset;
             
-            noiseTexture.GenerateNoiseForChanelAsync(currentSettings, NoiseTextureChannel.RED, this, onCompleted);
+            noiseTexture.GenerateNoiseForChanel(currentSettings, NoiseTextureChannel.RED, this, onCompleted);
         }
 
         private int GetSimplifiedTerrainResolution(int fullMeshResolution, int lod)
