@@ -64,8 +64,7 @@ namespace Procedural
 				return terrainOffset;
 			}
 		}
-
-		//TODO: HOW TO USE HEIGHT CURVE INSIDE JOB?
+		
 		public AnimationCurve HeightCurve
 		{
 			get
