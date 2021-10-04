@@ -79,11 +79,11 @@ namespace Procedural
 				int x = vertexIndex % simplifiedMeshResolution;
 				int y = (int) math.floor(vertexIndex / (float) simplifiedMeshResolution);
 
-				float xRatio = x / (float) simplifiedMeshResolution;
-				float yRatio = y / (float) simplifiedMeshResolution;
+				float xRatio = x / (float) (simplifiedMeshResolution-1);
+				float yRatio = y / (float) (simplifiedMeshResolution-1);
 				
-				float topLeftCornerX = (fullMeshResolution - 1) / -2f;
-				float topLeftCornerZ = (fullMeshResolution - 1) / 2f;
+				float topLeftCornerX = (fullMeshResolution) / -2f;
+				float topLeftCornerZ = (fullMeshResolution) / 2f;
 
 				float heightRatio = noiseMap[x + simplifiedMeshResolution * y].r;
 				float curvedHeightRatio = heightCurve[(int) (heightRatio * CURVE_SAMPLING_FREQUENCY)];
@@ -91,7 +91,7 @@ namespace Procedural
 				float height = curvedHeightRatio * heightRange;
                 
 				vertices[index] = new float3(topLeftCornerX + xRatio * fullMeshResolution, height, topLeftCornerZ - yRatio * fullMeshResolution) + meshOffset;
-                
+
 				uvs[index] = new float2(xRatio, yRatio);
 				
 				triangles[index] = index;

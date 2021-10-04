@@ -2,6 +2,7 @@
 using System.Collections;
 using Procedural.Utilities;
 using Unity.Collections;
+using Unity.EditorCoroutines.Editor;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
@@ -61,8 +62,18 @@ namespace Procedural
 
             JobHandle generateMeshJobHandle = terrainMeshJob.Schedule(jobIterations, meshSize / 6, dependency);
 
+#if UNITY_EDITOR
+            if (Application.isPlaying)
+            {
+                jobContext.StartCoroutine(GenerateMeshJobProcess());
+            }
+            else
+            {
+                EditorCoroutineUtility.StartCoroutine(GenerateMeshJobProcess(), this);
+            }
+#else         
             jobContext.StartCoroutine(GenerateMeshJobProcess());
-            
+#endif
             return generateMeshJobHandle;
             
             IEnumerator GenerateMeshJobProcess()

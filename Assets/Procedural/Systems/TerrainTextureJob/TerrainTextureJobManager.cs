@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
+using Unity.EditorCoroutines.Editor;
 using Unity.Jobs;
 using UnityEngine;
 
@@ -57,7 +58,20 @@ namespace Procedural
             
             JobHandle generateTextureJobHandle = terrainTextureJob.Schedule(terrainResolution, terrainResolution / 6, dependency);
 
+#if UNITY_EDITOR
+            if (Application.isPlaying)
+            {
+                jobContext.StartCoroutine(GenerateTextureJobProcess());
+
+            }
+            else
+            {
+                EditorCoroutineUtility.StartCoroutine(GenerateTextureJobProcess(), this);
+
+            }
+#else         
             jobContext.StartCoroutine(GenerateTextureJobProcess());
+#endif
             
             return generateTextureJobHandle;
             
