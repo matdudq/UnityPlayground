@@ -2,10 +2,13 @@
 using System.Collections;
 using Procedural.Utilities;
 using Unity.Collections;
-using Unity.EditorCoroutines.Editor;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using Unity.EditorCoroutines.Editor;
+#endif
 
 namespace Procedural
 {

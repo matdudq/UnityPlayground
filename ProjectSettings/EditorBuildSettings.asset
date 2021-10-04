@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Procedural/Scenes/ProceduralWorlds.unity
+    guid: 676606a2a4659f641978a7846e99d83e
   m_configObjects: {}

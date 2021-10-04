@@ -28,7 +28,7 @@ namespace Procedural
         
         [SerializeField]
         private Vector3 terrainOffset = Vector3.zero;
-
+        
         #endregion Variables
 
 		#region Properties
@@ -80,7 +80,7 @@ namespace Procedural
 				return levelOfDetails;
 			}
 		}
-
+		
 		#endregion Properties
     }
 }

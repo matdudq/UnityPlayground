@@ -111,10 +111,9 @@ namespace Procedural
             else
             {
                 noiseTexture.GenerateNoiseForChanelInEditor(currentSettings, NoiseTextureChannel.RED, this, onCompleted);
-
             }
 #else         
-            jobContext.StartCoroutine(GenerateMeshJobProcess());
+             noiseTexture.GenerateNoiseForChanel(currentSettings, NoiseTextureChannel.RED, this, onCompleted);
 #endif
         }
 

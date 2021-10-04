@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
-using Unity.EditorCoroutines.Editor;
 using Unity.Jobs;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using Unity.EditorCoroutines.Editor;
+#endif
 
 namespace Procedural
 {

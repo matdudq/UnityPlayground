@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace Procedural
+namespace Procedural.Showcase
 {
     public class ObserverMover : MonoBehaviour
     {
