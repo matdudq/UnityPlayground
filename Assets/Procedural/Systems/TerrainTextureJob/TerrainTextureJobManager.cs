@@ -34,7 +34,7 @@ namespace Procedural
         {
             int textureResolution = settings.simplifiedTerrainResolution;
 
-            Texture2D meshTexture = new Texture2D(textureResolution, textureResolution, TextureFormat.RGBA32, false);
+            Texture2D meshTexture = new Texture2D(textureResolution, textureResolution, TextureFormat.RGBA32, true);
             meshTexture.filterMode = FilterMode.Point;
             meshTexture.wrapMode = TextureWrapMode.Clamp;
 
@@ -48,7 +48,7 @@ namespace Procedural
             
             NativeArray<Color32> textureArray = meshTexture.GetRawTextureData<Color32>();
             
-            int terrainResolution = textureArray.Length;
+            int terrainTextureResolution = textureResolution * textureResolution;
 
             TerrainTextureJob terrainTextureJob = new TerrainTextureJob()
             {
@@ -58,7 +58,7 @@ namespace Procedural
                 textureArray = textureArray
             };
             
-            JobHandle generateTextureJobHandle = terrainTextureJob.Schedule(terrainResolution, terrainResolution / 6, dependency);
+            JobHandle generateTextureJobHandle = terrainTextureJob.Schedule(terrainTextureResolution, terrainTextureResolution / 6, dependency);
 
 #if UNITY_EDITOR
             if (Application.isPlaying)
@@ -83,7 +83,7 @@ namespace Procedural
 
                 generateTextureJobHandle.Complete();
                 
-                meshTexture.Apply();
+                meshTexture.Apply(true);
                 
                 onCompleted?.Invoke(meshTexture);
 
